@@ -64,7 +64,7 @@ async def codzienny_utwor():
 
     teraz = datetime.now()
 
-    if teraz.hour == 20 and teraz.minute == 0:
+    if teraz.hour == 21 and teraz.minute == 0:
 
         kanal = client.get_channel(KANAL_ID)
 
