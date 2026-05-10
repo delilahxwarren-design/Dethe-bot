@@ -12,7 +12,7 @@ TOKEN = os.getenv("TOKEN")
 KANAL_ID = 1501855557584162818
 ROLA_BUTELKA = "BUTELKA"
 
-# KEEP ALIVE DLA RENDERA 💜
+# KEEP ALIVE 💜
 app = Flask('')
 
 @app.route('/')
@@ -64,7 +64,7 @@ async def codzienny_utwor():
 
     teraz = datetime.now()
 
-    if teraz.hour == 21 and teraz.minute == 0:
+    if teraz.hour == 21 and 30 <= teraz.minute <= 32:
 
         kanal = client.get_channel(KANAL_ID)
 
@@ -72,6 +72,8 @@ async def codzienny_utwor():
             await kanal.send(
                 f"🎶 Dzisiejszy utwór od Dethe:\n{random.choice(utwory)}"
             )
+
+            await asyncio.sleep(180)
 
 @client.event
 async def on_message(message):
