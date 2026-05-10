@@ -52,7 +52,36 @@ async def codzienny_utwor():
             await kanal.send(
                 f"🎶 Dzisiejszy utwór od Dethe:\n{random.choice(utwory)}"
             )
+if message.content == "!butelka":
 
+        members = [
+            member for member in message.channel.members
+            if not member.bot
+        ]
+
+        if len(members) < 2:
+            await message.channel.send("❌ Za mało osób do gry!")
+            return
+
+        osoba = random.choice(members)
+
+        await message.channel.send("🍾 Kręcę butelką...")
+        await asyncio.sleep(1)
+
+        await message.channel.send("3️⃣")
+        await asyncio.sleep(1)
+
+        await message.channel.send("2️⃣")
+        await asyncio.sleep(1)
+
+        await message.channel.send("1️⃣")
+        await asyncio.sleep(1)
+
+        wybor = random.choice(["❓ PYTANIE", "🔥 WYZWANIE"])
+
+        await message.channel.send(
+            f"🍾 Butelka wskazuje: {osoba.mention}\n\n{wybor}"
+        )
 @client.event
 async def on_message(message):
 
