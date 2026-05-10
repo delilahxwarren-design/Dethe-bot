@@ -1,6 +1,7 @@
 import discord
 import random
 import os
+import asyncio
 from discord.ext import tasks
 from datetime import datetime
 
@@ -52,7 +53,22 @@ async def codzienny_utwor():
             await kanal.send(
                 f"🎶 Dzisiejszy utwór od Dethe:\n{random.choice(utwory)}"
             )
-if message.content == "!butelka":
+
+@client.event
+async def on_message(message):
+
+    if message.author == client.user:
+        return
+
+    if message.content == "!ping":
+        await message.channel.send("🏓 Pong!")
+
+    if message.content == "!utwór":
+        await message.channel.send(
+            f"🎵 Dethe poleca:\n{random.choice(utwory)}"
+        )
+
+    if message.content == "!butelka":
 
         members = [
             member for member in message.channel.members
@@ -81,19 +97,6 @@ if message.content == "!butelka":
 
         await message.channel.send(
             f"🍾 Butelka wskazuje: {osoba.mention}\n\n{wybor}"
-        )
-@client.event
-async def on_message(message):
-
-    if message.author == client.user:
-        return
-
-    if message.content == "!ping":
-        await message.channel.send("🏓 Pong!")
-
-    if message.content == "!utwór":
-        await message.channel.send(
-            f"🎵 Dethe poleca:\n{random.choice(utwory)}"
         )
 
 client.run(TOKEN)
