@@ -21,6 +21,7 @@ ROLA_BUTELKA = "BUTELKA"
 CZAS_RUNDY = 10
 ILOSC_RUND = 10
 PRZERWA_MIEDZY_RUNDAMI = 5
+CZAS_GLOSOWANIA = 15
 
 # =========================================
 # DISCORD
@@ -327,10 +328,6 @@ async def on_message(message):
             ILOSC_RUND
         )
 
-        # =================================
-        # COUNTDOWN
-        # =================================
-
         start_msg = await message.channel.send(
             f"⚔️ [ {random.choice(HASLA_START)} ]\n\n"
             f"Start za 10..."
@@ -347,7 +344,7 @@ async def on_message(message):
                 f"Start za {i}..."
             )
 
-            await asyncio.sleep(15)
+            await asyncio.sleep(1)
 
         # =================================
         # RUNDY
@@ -458,10 +455,6 @@ async def on_message(message):
             await asyncio.sleep(
                 PRZERWA_MIEDZY_RUNDAMI
             )
-
-        # =================================
-        # ZWYCIĘZCA
-        # =================================
 
         if punkty_pm:
 
@@ -580,13 +573,16 @@ async def on_message(message):
                 f"⚠️ Nieznana odpowiedź:\n"
                 f"**{odpowiedz}**\n\n"
                 f"👍 = TAK\n"
-                f"👎 = NIE"
+                f"👎 = NIE\n\n"
+                f"⏳ {CZAS_GLOSOWANIA} sekund na głosowanie"
             )
 
             await vote_msg.add_reaction("👍")
             await vote_msg.add_reaction("👎")
 
-            await asyncio.sleep(5)
+            await asyncio.sleep(
+                CZAS_GLOSOWANIA
+            )
 
             vote_msg = await message.channel.fetch_message(
                 vote_msg.id
@@ -619,53 +615,5 @@ async def on_message(message):
                 await message.add_reaction("❌")
 
             return
-
-    # =====================================
-    # BUTELKA
-    # =====================================
-
-    if message.content == "!butelka":
-
-        members = [
-
-            member for member in message.channel.members
-
-            if (
-                not member.bot
-                and any(
-                    role.name == ROLA_BUTELKA
-                    for role in member.roles
-                )
-            )
-        ]
-
-        if len(members) < 2:
-
-            await message.channel.send(
-                "❌ Za mało osób z rolą BUTELKA!"
-            )
-
-            return
-
-        osoba = random.choice(members)
-
-        await message.channel.send(
-            "🍾 Dethe kręci butelką..."
-        )
-
-        await asyncio.sleep(1)
-
-        wybor = random.choice([
-            "❓ PYTANIE",
-            "🔥 WYZWANIE"
-        ])
-
-        await message.channel.send(
-            f"🍾 Butelka wskazuje:\n"
-            f"{osoba.mention}\n\n"
-            f"{wybor}"
-        )
-
-        return
 
 client.run(TOKEN)
