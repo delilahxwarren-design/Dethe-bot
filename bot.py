@@ -50,27 +50,61 @@ intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 
 # =========================================
+# HASŁA DETHE
+# =========================================
+
+HASLA_START = [
+    "PRÓBA ROZPOCZĘTA",
+    "SYSTEM AKTYWNY",
+    "ARENA OTWARTA",
+    "CZAS START",
+    "WEJDŹ DO GRY",
+    "ROZPOCZĘCIE RUNDY",
+    "TRYB GRY AKTYWNY"
+]
+
+HASLA_KONIEC = [
+    "RUNDA ZAMKNIĘTA",
+    "CZAS MINĄŁ",
+    "ANALIZA ODPOWIEDZI",
+    "KONIEC PRÓBY",
+    "RUNDA DOBIEGŁA KOŃCA"
+]
+
+HASLA_WIN = [
+    "MISTRZ PRÓBY",
+    "OSTATNI OCALAŁY",
+    "ZWYCIĘZCA ARENY",
+    "KRÓL DETHE",
+    "DOMINATOR RUND"
+]
+
+HASLA_TIMER = [
+    "POSPIESZ SIĘ",
+    "MYŚL SZYBCIEJ",
+    "CZAS UCIEKA",
+    "OSTATNIE SEKUNDY",
+    "NAPIĘCIE ROŚNIE"
+]
+
+# =========================================
 # MUZYKA
 # =========================================
 
 utwory = [
 
-    # Imagine Dragons
     "https://open.spotify.com/track/0pqnGHJpmpxLKifKRmU6WP",
     "https://open.spotify.com/track/3LlAyCYU26dvFZBDUIMb7a",
     "https://open.spotify.com/track/1NtIMM4N0cFa1dNzN15chl",
     "https://open.spotify.com/track/62yJjFtgkhUrXktIoSjgP2",
 
-    # Lady Gaga
     "https://open.spotify.com/track/6rLqjzGV5VMLDWEnuUqi8q",
     "https://open.spotify.com/track/5R8dQOPq8haW94K7mgERlO",
     "https://open.spotify.com/track/0SiywuOBRcynK0uKGWdCnn",
 
-    # Sabrina Carpenter
     "https://open.spotify.com/track/2qSkIjg1o9h3YT9RAgYN75",
     "https://open.spotify.com/track/5N3hjp1WNayUPZrA8kJmJP",
 
-    # Rock
     "https://open.spotify.com/track/7ouMYWpwJ422jRcDASZB7P",
     "https://open.spotify.com/track/58ge6dfP91o9oXMzq3XkIS",
     "https://open.spotify.com/track/2nLtzopw4rPReszdYBJU6h"
@@ -165,7 +199,7 @@ async def on_message(message):
         return
 
     # =========================================
-    # KOMENDA DOŁĄCZ
+    # DOŁĄCZ
     # =========================================
 
     if message.content == "!dolacz":
@@ -176,9 +210,11 @@ async def on_message(message):
         )
 
         if role in message.author.roles:
+
             await message.channel.send(
-                "❌ Masz już rolę GRACZPM."
+                f"❌ {message.author.mention} już bierze udział w grze."
             )
+
             return
 
         await message.author.add_roles(role)
@@ -197,13 +233,17 @@ async def on_message(message):
             return
 
         if not gra_pm:
-            await message.channel.send("❌ Gra nie trwa.")
+
+            await message.channel.send(
+                "❌ Gra nie trwa."
+            )
+
             return
 
         gra_pm = False
 
         await message.channel.send(
-            "[ DETHE ]\n\n"
+            f"🏁 [ {random.choice(HASLA_KONIEC)} ]\n\n"
             "⛔ Gra została zatrzymana."
         )
 
@@ -242,6 +282,7 @@ async def on_message(message):
     # =========================================
 
     if message.content == "!utwór":
+
         await message.channel.send(
             f"🎵 Dethe poleca:\n{random.choice(utwory)}"
         )
@@ -258,9 +299,11 @@ async def on_message(message):
         ]
 
         if len(members) < 2:
+
             await message.channel.send(
                 "❌ Za mało osób z rolą BUTELKA!"
             )
+
             return
 
         osoba = random.choice(members)
@@ -296,7 +339,11 @@ async def on_message(message):
             return
 
         if gra_pm:
-            await message.channel.send("❌ Gra już trwa!")
+
+            await message.channel.send(
+                "❌ Gra już trwa!"
+            )
+
             return
 
         gra_pm = True
@@ -308,7 +355,7 @@ async def on_message(message):
         )
 
         start_msg = await message.channel.send(
-            "[ DETHE ]\n\n"
+            f"⚔️ [ {random.choice(HASLA_START)} ]\n\n"
             "Gra rozpoczyna się za 10 sekund..."
         )
 
@@ -316,7 +363,7 @@ async def on_message(message):
 
             await start_msg.edit(
                 content=
-                f"[ DETHE ]\n\n"
+                f"⚔️ [ {random.choice(HASLA_START)} ]\n\n"
                 f"Start za {i}..."
             )
 
@@ -337,9 +384,9 @@ async def on_message(message):
             aktualna_litera = random.choice(LITERY)
 
             msg = await message.channel.send(
-                f"[ DETHE ]\n\n"
-                f"🎯 Kategoria: {kategoria}\n"
-                f"🔤 Litera: {aktualna_litera}\n\n"
+                f"🎯 [ RUNDA {runda}/{ILOSC_RUND} ]\n\n"
+                f"📚 Kategoria: **{kategoria}**\n"
+                f"🔤 Litera: **{aktualna_litera}**\n\n"
                 f"⏳ Pozostały czas: {CZAS_RUNDY}s"
             )
 
@@ -348,11 +395,13 @@ async def on_message(message):
                 if not gra_pm:
                     break
 
+                tekst = random.choice(HASLA_TIMER)
+
                 await msg.edit(
                     content=
-                    f"[ DETHE ]\n\n"
-                    f"🎯 Kategoria: {kategoria}\n"
-                    f"🔤 Litera: {aktualna_litera}\n\n"
+                    f"🔥 [ {tekst} ]\n\n"
+                    f"📚 Kategoria: **{kategoria}**\n"
+                    f"🔤 Litera: **{aktualna_litera}**\n\n"
                     f"⏳ Pozostały czas: {czas}s"
                 )
 
@@ -383,12 +432,15 @@ async def on_message(message):
                 punkty_pm[user_id]["punkty"] += pkt
 
                 wyniki.append(
-                    f"✅ {data['nick']} — "
+                    f"✅ **{data['nick']}** — "
                     f"{data['odpowiedz']} (+{pkt} pkt)"
                 )
 
             if not wyniki:
-                wyniki.append("❌ Brak poprawnych odpowiedzi.")
+
+                wyniki.append(
+                    "❌ Nikt nie udzielił poprawnej odpowiedzi."
+                )
 
             ranking = sorted(
                 punkty_pm.values(),
@@ -401,13 +453,12 @@ async def on_message(message):
             for i, gracz in enumerate(ranking, start=1):
 
                 tabela += (
-                    f"{i}. "
-                    f"{gracz['nick']} — "
+                    f"{i}. {gracz['nick']} — "
                     f"{gracz['punkty']} pkt\n"
                 )
 
             await message.channel.send(
-                f"[ KONIEC RUNDY {runda} ]\n\n"
+                f"🏁 [ {random.choice(HASLA_KONIEC)} ]\n\n"
                 + "\n".join(wyniki)
                 + "\n\n🏆 Ranking:\n"
                 + tabela
@@ -427,10 +478,9 @@ async def on_message(message):
             )
 
             await message.channel.send(
-                f"[ DETHE ]\n\n"
-                f"🏆 ZWYCIĘZCA:\n"
-                f"{zwyciezca['nick']} — "
-                f"{zwyciezca['punkty']} pkt"
+                f"👑 [ {random.choice(HASLA_WIN)} ]\n\n"
+                f"🏆 {zwyciezca['nick']} zdobywa "
+                f"{zwyciezca['punkty']} pkt!"
             )
 
         gra_pm = False
