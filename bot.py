@@ -9,9 +9,9 @@ from threading import Thread
 
 TOKEN = os.getenv("TOKEN")
 
-# =========================
+# =========================================
 # KONFIG
-# =========================
+# =========================================
 
 KANAL_ID = 1501855557584162818
 ROLA_BUTELKA = "BUTELKA"
@@ -19,12 +19,13 @@ ROLA_BUTELKA = "BUTELKA"
 KANAL_PM = 1503427984273703002
 ROLA_PM = "GRACZPM"
 
-ROUND_TIME = 10
-TOTAL_ROUNDS = 15
+CZAS_RUNDY = 10
+ILOSC_RUND = 10
+PRZERWA_MIEDZY_RUNDAMI = 8
 
-# =========================
+# =========================================
 # KEEP ALIVE 💜
-# =========================
+# =========================================
 
 app = Flask('')
 
@@ -41,16 +42,16 @@ def keep_alive():
 
 keep_alive()
 
-# =========================
+# =========================================
 # DISCORD
-# =========================
+# =========================================
 
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 
-# =========================
+# =========================================
 # MUZYKA
-# =========================
+# =========================================
 
 utwory = [
 
@@ -75,38 +76,62 @@ utwory = [
     "https://open.spotify.com/track/2nLtzopw4rPReszdYBJU6h"
 ]
 
-# =========================
+# =========================================
 # PAŃSTWA MIASTA
-# =========================
+# =========================================
 
-CATEGORIES = [
+KATEGORIE = [
     "Państwo",
     "Miasto",
     "Zwierzę",
     "Imię",
     "Rzecz",
-    "Jedzenie"
+    "Jedzenie",
+    "Kolor",
+    "Zawód",
+    "Roślina",
+    "Marka",
+    "Samochód",
+    "Gra",
+    "Film",
+    "Serial",
+    "YouTuber",
+    "Streamer",
+    "Sport",
+    "Firma",
+    "Instrument",
+    "Emoji",
+    "Potwór",
+    "Demon",
+    "Anime",
+    "Napój",
+    "Słodycz",
+    "Fast food",
+    "Owoc",
+    "Warzywo",
+    "Kwiat",
+    "Mebel"
 ]
 
-LETTERS = list("ABCDEFGHIJKLMNOPRSTUWZ")
+LITERY = list("ABCDEFGHIJKLMNOPRSTUWZ")
 
 gra_pm = False
 odpowiedzi_pm = {}
 punkty_pm = {}
 aktualna_litera = ""
 
-# =========================
+# =========================================
 # READY
-# =========================
+# =========================================
 
 @client.event
 async def on_ready():
     print(f"{client.user} online!")
     codzienny_utwor.start()
 
-# =========================
+# =========================================
 # CODZIENNY UTWÓR
-# =========================
+# =========================================
 
 @tasks.loop(minutes=1)
 async def codzienny_utwor():
@@ -124,9 +149,9 @@ async def codzienny_utwor():
 
             await asyncio.sleep(180)
 
-# =========================
+# =========================================
 # MESSAGE EVENT
-# =========================
+# =========================================
 
 @client.event
 async def on_message(message):
@@ -139,9 +164,54 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    # =========================
-    # PAŃSTWA MIASTA ODPOWIEDZI
-    # =========================
+    # =========================================
+    # KOMENDA DOŁĄCZ
+    # =========================================
+
+    if message.content == "!dolacz":
+
+        role = discord.utils.get(
+            message.guild.roles,
+            name=ROLA_PM
+        )
+
+        if role in message.author.roles:
+            await message.channel.send(
+                "❌ Masz już rolę GRACZPM."
+            )
+            return
+
+        await message.author.add_roles(role)
+
+        await message.channel.send(
+            f"✅ {message.author.mention} dołączył do Państw Miast!"
+        )
+
+    # =========================================
+    # STOP GRY
+    # =========================================
+
+    if message.content == "!gra-stop":
+
+        if message.channel.id != KANAL_PM:
+            return
+
+        if not gra_pm:
+            await message.channel.send("❌ Gra nie trwa.")
+            return
+
+        gra_pm = False
+
+        await message.channel.send(
+            "[ DETHE ]\n\n"
+            "⛔ Gra została zatrzymana."
+        )
+
+        return
+
+    # =========================================
+    # ODPOWIEDZI PM
+    # =========================================
 
     if (
         gra_pm
@@ -160,25 +230,25 @@ async def on_message(message):
                     "odpowiedz": odpowiedz
                 }
 
-    # =========================
+    # =========================================
     # PING
-    # =========================
+    # =========================================
 
     if message.content == "!ping":
         await message.channel.send("🏓 Pong!")
 
-    # =========================
+    # =========================================
     # LOSOWY UTWÓR
-    # =========================
+    # =========================================
 
     if message.content == "!utwór":
         await message.channel.send(
             f"🎵 Dethe poleca:\n{random.choice(utwory)}"
         )
 
-    # =========================
+    # =========================================
     # BUTELKA
-    # =========================
+    # =========================================
 
     if message.content == "!butelka":
 
@@ -216,9 +286,9 @@ async def on_message(message):
             f"🍾 Butelka wskazuje: {osoba.mention}\n\n{wybor}"
         )
 
-    # =========================
+    # =========================================
     # START GRY PM
-    # =========================
+    # =========================================
 
     if message.content == "!gra-start":
 
@@ -231,6 +301,11 @@ async def on_message(message):
 
         gra_pm = True
         punkty_pm = {}
+
+        losowe_kategorie = random.sample(
+            KATEGORIE,
+            ILOSC_RUND
+        )
 
         start_msg = await message.channel.send(
             "[ DETHE ]\n\n"
@@ -247,25 +322,31 @@ async def on_message(message):
 
             await asyncio.sleep(1)
 
-        # =========================
+        # =========================================
         # RUNDY
-        # =========================
+        # =========================================
 
-        for runda in range(1, TOTAL_ROUNDS + 1):
+        for runda in range(1, ILOSC_RUND + 1):
+
+            if not gra_pm:
+                break
 
             odpowiedzi_pm = {}
 
-            kategoria = random.choice(CATEGORIES)
-            aktualna_litera = random.choice(LETTERS)
+            kategoria = losowe_kategorie[runda - 1]
+            aktualna_litera = random.choice(LITERY)
 
             msg = await message.channel.send(
                 f"[ DETHE ]\n\n"
                 f"🎯 Kategoria: {kategoria}\n"
                 f"🔤 Litera: {aktualna_litera}\n\n"
-                f"⏳ Pozostały czas: {ROUND_TIME}s"
+                f"⏳ Pozostały czas: {CZAS_RUNDY}s"
             )
 
-            for czas in range(ROUND_TIME, 0, -1):
+            for czas in range(CZAS_RUNDY, 0, -1):
+
+                if not gra_pm:
+                    break
 
                 await msg.edit(
                     content=
@@ -276,6 +357,9 @@ async def on_message(message):
                 )
 
                 await asyncio.sleep(1)
+
+            if not gra_pm:
+                break
 
             wyniki = []
 
@@ -329,11 +413,11 @@ async def on_message(message):
                 + tabela
             )
 
-            await asyncio.sleep(3)
+            await asyncio.sleep(PRZERWA_MIEDZY_RUNDAMI)
 
-        # =========================
+        # =========================================
         # KONIEC GRY
-        # =========================
+        # =========================================
 
         if punkty_pm:
 
@@ -351,8 +435,8 @@ async def on_message(message):
 
         gra_pm = False
 
-# =========================
+# =========================================
 # RUN
-# =========================
+# =========================================
 
 client.run(TOKEN)
