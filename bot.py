@@ -4,14 +4,12 @@ import asyncio
 import os
 
 from discord.ext import tasks
-from dotenv import load_dotenv
 from datetime import datetime
 
 # =========================================
-# ENV
+# TOKEN
 # =========================================
 
-load_dotenv()
 TOKEN = os.getenv("TOKEN")
 
 # =========================================
@@ -62,7 +60,7 @@ def normalize(txt):
     return txt
 
 # =========================================
-# ŁADOWANIE BAZ
+# ŁADOWANIE PLIKÓW
 # =========================================
 
 def load_words(filename):
@@ -81,8 +79,7 @@ def load_words(filename):
                 if line.strip()
             ]
 
-    except Exception as e:
-        print(e)
+    except:
         return []
 
 # =========================================
@@ -169,6 +166,20 @@ UTWORY = [
 ]
 
 # =========================================
+# BUTELKA
+# =========================================
+
+PYTANIA_BUTELKA = [
+
+    "Kogo najbardziej lubisz?",
+    "Największy sekret?",
+    "Najbardziej cringowy moment?",
+    "Do kogo napiszesz po grze?",
+    "Kto jest hottest na serwerze?",
+    "Największy red flag?"
+]
+
+# =========================================
 # STAN GRY
 # =========================================
 
@@ -192,7 +203,7 @@ async def on_ready():
         codzienny_utwor.start()
 
 # =========================================
-# CODZIENNY SPOTIFY
+# CODZIENNY UTWÓR
 # =========================================
 
 @tasks.loop(minutes=1)
@@ -202,27 +213,18 @@ async def codzienny_utwor():
 
     if teraz.hour == 21 and teraz.minute == 30:
 
-        kanal = client.get_channel(KANAL_SPOTIFY)
+        kanal = client.get_channel(
+            KANAL_SPOTIFY
+        )
 
         if kanal:
 
             await kanal.send(
-                "🎶 Dzisiejszy utwór:\n\n"
-                + random.choice(UTWORY)
+                f"🎶 Dzisiejszy utwór:\n"
+                f"{random.choice(UTWORY)}"
             )
 
             await asyncio.sleep(60)
-
-# =========================================
-# BUTELKA
-# =========================================
-
-PYTANIA_BUTELKA = [
-    "Kogo najbardziej lubisz?",
-    "Największy sekret?",
-    "Najbardziej cringowy moment?",
-    "Do kogo napiszesz po grze?"
-]
 
 # =========================================
 # MESSAGE
@@ -246,7 +248,10 @@ async def on_message(message):
 
     if message.content == "!ping":
 
-        await message.channel.send("🏓 Pong!")
+        await message.channel.send(
+            "🏓 Pong!"
+        )
+
         return
 
     # =====================================
@@ -256,8 +261,8 @@ async def on_message(message):
     if message.content == "!utwor":
 
         await message.channel.send(
-            "🎵 Polecany utwór:\n\n"
-            + random.choice(UTWORY)
+            f"🎵 Polecany utwór:\n"
+            f"{random.choice(UTWORY)}"
         )
 
         return
@@ -284,11 +289,14 @@ async def on_message(message):
         osoba1 = random.choice(members)
         osoba2 = random.choice(members)
 
-        pytanie = random.choice(PYTANIA_BUTELKA)
+        pytanie = random.choice(
+            PYTANIA_BUTELKA
+        )
 
         await message.channel.send(
             f"🍾 BUTELKA\n\n"
-            f"💘 {osoba1.mention} → {osoba2.mention}\n\n"
+            f"{osoba1.mention} ➜ "
+            f"{osoba2.mention}\n\n"
             f"❓ {pytanie}"
         )
 
@@ -305,14 +313,6 @@ async def on_message(message):
             name=ROLA_PM
         )
 
-        if not role:
-
-            await message.channel.send(
-                "❌ Nie znaleziono roli."
-            )
-
-            return
-
         if role in message.author.roles:
 
             await message.channel.send(
@@ -321,10 +321,13 @@ async def on_message(message):
 
             return
 
-        await message.author.add_roles(role)
+        await message.author.add_roles(
+            role
+        )
 
         await message.channel.send(
-            f"✅ {message.author.mention} dołączył do gry!"
+            f"✅ {message.author.mention} "
+            f"dołączył do gry!"
         )
 
         return
@@ -349,10 +352,8 @@ async def on_message(message):
         gra_pm = True
         punkty_pm = {}
 
-        lista_kategorii = list(KATEGORIE.keys())
-
         losowe_kategorie = random.sample(
-            lista_kategorii,
+            list(KATEGORIE.keys()),
             ILOSC_RUND
         )
 
@@ -362,29 +363,42 @@ async def on_message(message):
 
         await asyncio.sleep(3)
 
-        for runda in range(ILOSC_RUND):
+        for runda in range(1, ILOSC_RUND + 1):
 
             odpowiedzi_pm = {}
 
-            aktualna_kategoria = losowe_kategorie[runda]
-            aktualna_litera = random.choice(LITERY)
+            aktualna_kategoria = (
+                losowe_kategorie[runda - 1]
+            )
+
+            aktualna_litera = random.choice(
+                LITERY
+            )
 
             timer_msg = await message.channel.send(
-                f"🔥 [ {random.choice(HASLA_TIMER)} ]\n\n"
-                f"📚 Kategoria: **{aktualna_kategoria}**\n"
-                f"🔤 Litera: **{aktualna_litera}**\n\n"
+                f"🔥 RUNDA {runda}/{ILOSC_RUND}\n\n"
+                f"📚 Kategoria: "
+                f"**{aktualna_kategoria}**\n"
+                f"🔤 Litera: "
+                f"**{aktualna_litera}**\n\n"
                 f"⏳ {CZAS_RUNDY}s"
             )
 
-            for czas in range(CZAS_RUNDY - 1, -1, -1):
+            for czas in range(
+                CZAS_RUNDY - 1,
+                -1,
+                -1
+            ):
 
                 await asyncio.sleep(1)
 
                 await timer_msg.edit(
                     content=
                     f"🔥 [ {random.choice(HASLA_TIMER)} ]\n\n"
-                    f"📚 Kategoria: **{aktualna_kategoria}**\n"
-                    f"🔤 Litera: **{aktualna_litera}**\n\n"
+                    f"📚 Kategoria: "
+                    f"**{aktualna_kategoria}**\n"
+                    f"🔤 Litera: "
+                    f"**{aktualna_litera}**\n\n"
                     f"⏳ {czas}s"
                 )
 
@@ -402,11 +416,15 @@ async def on_message(message):
                 punkty_pm[user_id]["punkty"] += 10
 
                 wyniki.append(
-                    f"✅ {data['nick']} — {data['odpowiedz']}"
+                    f"✅ {data['nick']} — "
+                    f"{data['odpowiedz']}"
                 )
 
             if not wyniki:
-                wyniki.append("❌ Brak poprawnych odpowiedzi")
+
+                wyniki.append(
+                    "❌ Brak poprawnych odpowiedzi."
+                )
 
             ranking = sorted(
                 punkty_pm.values(),
@@ -416,10 +434,14 @@ async def on_message(message):
 
             tabela = ""
 
-            for i, gracz in enumerate(ranking, start=1):
+            for i, gracz in enumerate(
+                ranking,
+                start=1
+            ):
 
                 tabela += (
-                    f"{i}. {gracz['nick']} — "
+                    f"{i}. "
+                    f"{gracz['nick']} — "
                     f"{gracz['punkty']} pkt\n"
                 )
 
@@ -443,7 +465,8 @@ async def on_message(message):
 
             await message.channel.send(
                 f"👑 [ {random.choice(HASLA_WIN)} ]\n\n"
-                f"🏆 {zwyciezca['nick']} wygrał z wynikiem "
+                f"🏆 {zwyciezca['nick']} "
+                f"wygrywa z wynikiem "
                 f"{zwyciezca['punkty']} pkt!"
             )
 
@@ -501,6 +524,10 @@ async def on_message(message):
             for x in baza
         ]
 
+        # =================================
+        # POPRAWNA
+        # =================================
+
         if (
             odpowiedz_clean.startswith(
                 litera_clean
@@ -518,6 +545,10 @@ async def on_message(message):
             await message.add_reaction("✅")
 
             return
+
+        # =================================
+        # GŁOSOWANIE
+        # =================================
 
         elif odpowiedz_clean.startswith(
             litera_clean
