@@ -1,11 +1,17 @@
 import discord
 import random
-import os
 import asyncio
+import os
 
 from discord.ext import tasks
+from dotenv import load_dotenv
 from datetime import datetime
 
+# =========================================
+# ENV
+# =========================================
+
+load_dotenv()
 TOKEN = os.getenv("TOKEN")
 
 # =========================================
@@ -29,6 +35,85 @@ CZAS_GLOSOWANIA = 15
 
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
+
+# =========================================
+# NORMALIZACJA
+# =========================================
+
+def normalize(txt):
+
+    zamiany = {
+        "ą": "a",
+        "ć": "c",
+        "ę": "e",
+        "ł": "l",
+        "ń": "n",
+        "ó": "o",
+        "ś": "s",
+        "ż": "z",
+        "ź": "z"
+    }
+
+    txt = txt.lower().strip()
+
+    for pl, normal in zamiany.items():
+        txt = txt.replace(pl, normal)
+
+    return txt
+
+# =========================================
+# ŁADOWANIE BAZ
+# =========================================
+
+def load_words(filename):
+
+    try:
+
+        with open(
+            f"data/{filename}",
+            "r",
+            encoding="utf-8"
+        ) as file:
+
+            return [
+                line.strip()
+                for line in file.readlines()
+                if line.strip()
+            ]
+
+    except Exception as e:
+        print(e)
+        return []
+
+# =========================================
+# KATEGORIE
+# =========================================
+
+KATEGORIE = {
+
+    "Państwo": load_words("panstwa.txt"),
+    "Miasto": load_words("miasta.txt"),
+    "Zwierzę": load_words("zwierzeta.txt"),
+    "Imię": load_words("imiona.txt"),
+    "Jedzenie": load_words("jedzenie.txt"),
+    "Kolor": load_words("kolory.txt"),
+    "Zawód": load_words("zawody.txt"),
+    "Roślina": load_words("rosliny.txt"),
+    "Gra": load_words("gry.txt"),
+    "Film": load_words("filmy.txt"),
+    "Serial": load_words("seriale.txt"),
+    "Sport": load_words("sporty.txt"),
+    "Instrument": load_words("instrumenty.txt"),
+    "Napój": load_words("napoje.txt"),
+    "Słodycz": load_words("slodycze.txt"),
+    "Fast food": load_words("fastfood.txt"),
+    "Owoc": load_words("owoce.txt"),
+    "Warzywo": load_words("warzywa.txt"),
+    "Kwiat": load_words("kwiaty.txt"),
+    "Mebel": load_words("meble.txt")
+}
+
+LITERY = list("ABCDEFGHIJKLMNOPRSTUWYZ")
 
 # =========================================
 # HASŁA
@@ -60,7 +145,7 @@ HASLA_WIN = [
 # SPOTIFY
 # =========================================
 
-utwory = [
+UTWORY = [
 
     # Imagine Dragons
     "https://open.spotify.com/track/0pqnGHJpmpxLKifKRmU6WP",
@@ -82,111 +167,6 @@ utwory = [
     "https://open.spotify.com/track/58ge6dfP91o9oXMzq3XkIS",
     "https://open.spotify.com/track/2nLtzopw4rPReszdYBJU6h"
 ]
-
-# =========================================
-# KATEGORIE
-# =========================================
-
-KATEGORIE = [
-    "Państwo",
-    "Miasto",
-    "Zwierzę",
-    "Imię",
-    "Jedzenie",
-    "Kolor",
-    "Zawód",
-    "Roślina",
-    "Gra",
-    "Film",
-    "Serial",
-    "Sport",
-    "Instrument",
-    "Napój",
-    "Słodycz",
-    "Fast food",
-    "Owoc",
-    "Warzywo",
-    "Kwiat",
-    "Mebel"
-]
-
-LITERY = list("ABCDEFGHIJKLMNOPRSTUWYZ")
-
-# =========================================
-# POLSKIE ZNAKI
-# =========================================
-
-def usun_polskie_znaki(txt):
-
-    zamiany = {
-        "ą": "a",
-        "ć": "c",
-        "ę": "e",
-        "ł": "l",
-        "ń": "n",
-        "ó": "o",
-        "ś": "s",
-        "ż": "z",
-        "ź": "z"
-    }
-
-    txt = txt.lower()
-
-    for pl, normal in zamiany.items():
-        txt = txt.replace(pl, normal)
-
-    return txt
-
-# =========================================
-# WCZYTYWANIE PLIKÓW
-# =========================================
-
-def load_words(filename):
-
-    try:
-
-        with open(
-            f"data/{filename}",
-            "r",
-            encoding="utf-8"
-        ) as file:
-
-            return [
-                line.strip().lower()
-                for line in file.readlines()
-                if line.strip()
-            ]
-
-    except:
-        return []
-
-# =========================================
-# BAZY
-# =========================================
-
-BAZY = {
-
-    "Państwo": load_words("panstwa.txt"),
-    "Miasto": load_words("miasta.txt"),
-    "Zwierzę": load_words("zwierzeta.txt"),
-    "Imię": load_words("imiona.txt"),
-    "Jedzenie": load_words("jedzenie.txt"),
-    "Kolor": load_words("kolory.txt"),
-    "Zawód": load_words("zawody.txt"),
-    "Roślina": load_words("rosliny.txt"),
-    "Gra": load_words("gry.txt"),
-    "Film": load_words("filmy.txt"),
-    "Serial": load_words("seriale.txt"),
-    "Sport": load_words("sporty.txt"),
-    "Instrument": load_words("instrumenty.txt"),
-    "Napój": load_words("napoje.txt"),
-    "Słodycz": load_words("slodycze.txt"),
-    "Fast food": load_words("fastfood.txt"),
-    "Owoc": load_words("owoce.txt"),
-    "Warzywo": load_words("warzywa.txt"),
-    "Kwiat": load_words("kwiaty.txt"),
-    "Mebel": load_words("meble.txt")
-}
 
 # =========================================
 # STAN GRY
@@ -212,7 +192,7 @@ async def on_ready():
         codzienny_utwor.start()
 
 # =========================================
-# CODZIENNY UTWÓR
+# CODZIENNY SPOTIFY
 # =========================================
 
 @tasks.loop(minutes=1)
@@ -220,20 +200,29 @@ async def codzienny_utwor():
 
     teraz = datetime.now()
 
-    if teraz.hour == 21 and 30 <= teraz.minute <= 32:
+    if teraz.hour == 21 and teraz.minute == 30:
 
-        kanal = client.get_channel(
-            KANAL_SPOTIFY
-        )
+        kanal = client.get_channel(KANAL_SPOTIFY)
 
         if kanal:
 
             await kanal.send(
-                f"🎶 Dzisiejszy utwór od Dethe:\n"
-                f"{random.choice(utwory)}"
+                "🎶 Dzisiejszy utwór:\n\n"
+                + random.choice(UTWORY)
             )
 
-            await asyncio.sleep(180)
+            await asyncio.sleep(60)
+
+# =========================================
+# BUTELKA
+# =========================================
+
+PYTANIA_BUTELKA = [
+    "Kogo najbardziej lubisz?",
+    "Największy sekret?",
+    "Najbardziej cringowy moment?",
+    "Do kogo napiszesz po grze?"
+]
 
 # =========================================
 # MESSAGE
@@ -257,10 +246,7 @@ async def on_message(message):
 
     if message.content == "!ping":
 
-        await message.channel.send(
-            "🏓 Pong!"
-        )
-
+        await message.channel.send("🏓 Pong!")
         return
 
     # =====================================
@@ -270,8 +256,40 @@ async def on_message(message):
     if message.content == "!utwor":
 
         await message.channel.send(
-            f"🎵 Dethe poleca:\n"
-            f"{random.choice(utwory)}"
+            "🎵 Polecany utwór:\n\n"
+            + random.choice(UTWORY)
+        )
+
+        return
+
+    # =====================================
+    # BUTELKA
+    # =====================================
+
+    if message.content == "!butelka":
+
+        members = [
+            member for member in message.guild.members
+            if not member.bot
+        ]
+
+        if len(members) < 2:
+
+            await message.channel.send(
+                "❌ Za mało osób."
+            )
+
+            return
+
+        osoba1 = random.choice(members)
+        osoba2 = random.choice(members)
+
+        pytanie = random.choice(PYTANIA_BUTELKA)
+
+        await message.channel.send(
+            f"🍾 BUTELKA\n\n"
+            f"💘 {osoba1.mention} → {osoba2.mention}\n\n"
+            f"❓ {pytanie}"
         )
 
         return
@@ -287,10 +305,18 @@ async def on_message(message):
             name=ROLA_PM
         )
 
+        if not role:
+
+            await message.channel.send(
+                "❌ Nie znaleziono roli."
+            )
+
+            return
+
         if role in message.author.roles:
 
             await message.channel.send(
-                "❌ Masz już rolę GRACZPM."
+                "❌ Masz już rolę."
             )
 
             return
@@ -315,7 +341,7 @@ async def on_message(message):
         if gra_pm:
 
             await message.channel.send(
-                "❌ Gra już trwa!"
+                "❌ Gra już trwa."
             )
 
             return
@@ -323,63 +349,34 @@ async def on_message(message):
         gra_pm = True
         punkty_pm = {}
 
+        lista_kategorii = list(KATEGORIE.keys())
+
         losowe_kategorie = random.sample(
-            KATEGORIE,
+            lista_kategorii,
             ILOSC_RUND
         )
 
-        start_msg = await message.channel.send(
-            f"⚔️ [ {random.choice(HASLA_START)} ]\n\n"
-            f"Start za 10..."
+        await message.channel.send(
+            f"⚔️ [ {random.choice(HASLA_START)} ]"
         )
 
-        for i in range(9, -1, -1):
+        await asyncio.sleep(3)
 
-            if not gra_pm:
-                return
-
-            await start_msg.edit(
-                content=
-                f"⚔️ [ {random.choice(HASLA_START)} ]\n\n"
-                f"Start za {i}..."
-            )
-
-            await asyncio.sleep(1)
-
-        # =================================
-        # RUNDY
-        # =================================
-
-        for runda in range(1, ILOSC_RUND + 1):
-
-            if not gra_pm:
-                break
+        for runda in range(ILOSC_RUND):
 
             odpowiedzi_pm = {}
 
-            aktualna_kategoria = losowe_kategorie[
-                runda - 1
-            ]
-
-            aktualna_litera = random.choice(
-                LITERY
-            )
+            aktualna_kategoria = losowe_kategorie[runda]
+            aktualna_litera = random.choice(LITERY)
 
             timer_msg = await message.channel.send(
-                f"🎯 RUNDA {runda}/{ILOSC_RUND}\n\n"
+                f"🔥 [ {random.choice(HASLA_TIMER)} ]\n\n"
                 f"📚 Kategoria: **{aktualna_kategoria}**\n"
                 f"🔤 Litera: **{aktualna_litera}**\n\n"
                 f"⏳ {CZAS_RUNDY}s"
             )
 
-            for czas in range(
-                CZAS_RUNDY - 1,
-                -1,
-                -1
-            ):
-
-                if not gra_pm:
-                    break
+            for czas in range(CZAS_RUNDY - 1, -1, -1):
 
                 await asyncio.sleep(1)
 
@@ -391,20 +388,9 @@ async def on_message(message):
                     f"⏳ {czas}s"
                 )
 
-            if not gra_pm:
-                break
-
             wyniki = []
 
-            pierwsza = True
-
             for user_id, data in odpowiedzi_pm.items():
-
-                pkt = 10
-
-                if pierwsza:
-                    pkt += 5
-                    pierwsza = False
 
                 if user_id not in punkty_pm:
 
@@ -413,18 +399,14 @@ async def on_message(message):
                         "punkty": 0
                     }
 
-                punkty_pm[user_id]["punkty"] += pkt
+                punkty_pm[user_id]["punkty"] += 10
 
                 wyniki.append(
-                    f"✅ {data['nick']} — "
-                    f"{data['odpowiedz']} (+{pkt} pkt)"
+                    f"✅ {data['nick']} — {data['odpowiedz']}"
                 )
 
             if not wyniki:
-
-                wyniki.append(
-                    "❌ Brak poprawnych odpowiedzi."
-                )
+                wyniki.append("❌ Brak poprawnych odpowiedzi")
 
             ranking = sorted(
                 punkty_pm.values(),
@@ -434,14 +416,10 @@ async def on_message(message):
 
             tabela = ""
 
-            for i, gracz in enumerate(
-                ranking,
-                start=1
-            ):
+            for i, gracz in enumerate(ranking, start=1):
 
                 tabela += (
-                    f"{i}. "
-                    f"{gracz['nick']} — "
+                    f"{i}. {gracz['nick']} — "
                     f"{gracz['punkty']} pkt\n"
                 )
 
@@ -465,8 +443,7 @@ async def on_message(message):
 
             await message.channel.send(
                 f"👑 [ {random.choice(HASLA_WIN)} ]\n\n"
-                f"🏆 {zwyciezca['nick']} "
-                f"wygrywa z wynikiem "
+                f"🏆 {zwyciezca['nick']} wygrał z wynikiem "
                 f"{zwyciezca['punkty']} pkt!"
             )
 
@@ -480,21 +457,10 @@ async def on_message(message):
 
     if message.content == "!stop":
 
-        if message.channel.id != KANAL_PM:
-            return
-
-        if not gra_pm:
-
-            await message.channel.send(
-                "❌ Gra nie trwa."
-            )
-
-            return
-
         gra_pm = False
 
         await message.channel.send(
-            "⛔ Gra została zatrzymana."
+            "⛔ Gra zatrzymana."
         )
 
         return
@@ -517,31 +483,23 @@ async def on_message(message):
 
         odpowiedz = message.content.strip()
 
-        odpowiedz_clean = (
-            usun_polskie_znaki(
-                odpowiedz.lower()
-            )
+        odpowiedz_clean = normalize(
+            odpowiedz
         )
 
-        litera_clean = (
-            usun_polskie_znaki(
-                aktualna_litera.lower()
-            )
+        litera_clean = normalize(
+            aktualna_litera
         )
 
-        baza = BAZY.get(
+        baza = KATEGORIE.get(
             aktualna_kategoria,
             []
         )
 
         baza_clean = [
-            usun_polskie_znaki(x)
+            normalize(x)
             for x in baza
         ]
-
-        # =================================
-        # POPRAWNA
-        # =================================
 
         if (
             odpowiedz_clean.startswith(
@@ -561,10 +519,6 @@ async def on_message(message):
 
             return
 
-        # =================================
-        # GŁOSOWANIE
-        # =================================
-
         elif odpowiedz_clean.startswith(
             litera_clean
         ):
@@ -574,7 +528,7 @@ async def on_message(message):
                 f"**{odpowiedz}**\n\n"
                 f"👍 = TAK\n"
                 f"👎 = NIE\n\n"
-                f"⏳ {CZAS_GLOSOWANIA} sekund na głosowanie"
+                f"⏳ {CZAS_GLOSOWANIA} sekund"
             )
 
             await vote_msg.add_reaction("👍")
@@ -594,10 +548,10 @@ async def on_message(message):
             for reaction in vote_msg.reactions:
 
                 if str(reaction.emoji) == "👍":
-                    up = reaction.count
+                    up = reaction.count - 1
 
                 elif str(reaction.emoji) == "👎":
-                    down = reaction.count
+                    down = reaction.count - 1
 
             if up > down:
 
@@ -615,5 +569,9 @@ async def on_message(message):
                 await message.add_reaction("❌")
 
             return
+
+# =========================================
+# START BOTA
+# =========================================
 
 client.run(TOKEN)
