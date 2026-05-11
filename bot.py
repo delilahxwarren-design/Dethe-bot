@@ -306,7 +306,7 @@ async def on_message(message):
     # START
     # =====================================
 
-    if message.content == "!gra-start":
+    if message.content == "!start":
 
         if message.channel.id != KANAL_PM:
             return
@@ -485,7 +485,7 @@ async def on_message(message):
     # STOP
     # =====================================
 
-    if message.content == "!gra-stop":
+    if message.content == "!stop":
 
         if message.channel.id != KANAL_PM:
             return
