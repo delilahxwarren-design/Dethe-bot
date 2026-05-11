@@ -347,7 +347,7 @@ async def on_message(message):
                 f"Start za {i}..."
             )
 
-            await asyncio.sleep(1)
+            await asyncio.sleep(15)
 
         # =================================
         # RUNDY
