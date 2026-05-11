@@ -9,10 +9,23 @@ from threading import Thread
 
 TOKEN = os.getenv("TOKEN")
 
+# =========================
+# KONFIG
+# =========================
+
 KANAL_ID = 1501855557584162818
 ROLA_BUTELKA = "BUTELKA"
 
+KANAL_PM = 1503427984273703002
+ROLA_PM = "GRACZPM"
+
+ROUND_TIME = 10
+TOTAL_ROUNDS = 15
+
+# =========================
 # KEEP ALIVE 💜
+# =========================
+
 app = Flask('')
 
 @app.route('/')
@@ -28,8 +41,16 @@ def keep_alive():
 
 keep_alive()
 
+# =========================
+# DISCORD
+# =========================
+
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
+
+# =========================
+# MUZYKA
+# =========================
 
 utwory = [
 
@@ -54,10 +75,38 @@ utwory = [
     "https://open.spotify.com/track/2nLtzopw4rPReszdYBJU6h"
 ]
 
+# =========================
+# PAŃSTWA MIASTA
+# =========================
+
+CATEGORIES = [
+    "Państwo",
+    "Miasto",
+    "Zwierzę",
+    "Imię",
+    "Rzecz",
+    "Jedzenie"
+]
+
+LETTERS = list("ABCDEFGHIJKLMNOPRSTUWZ")
+
+gra_pm = False
+odpowiedzi_pm = {}
+punkty_pm = {}
+aktualna_litera = ""
+
+# =========================
+# READY
+# =========================
+
 @client.event
 async def on_ready():
     print(f"{client.user} online!")
     codzienny_utwor.start()
+
+# =========================
+# CODZIENNY UTWÓR
+# =========================
 
 @tasks.loop(minutes=1)
 async def codzienny_utwor():
@@ -75,23 +124,62 @@ async def codzienny_utwor():
 
             await asyncio.sleep(180)
 
+# =========================
+# MESSAGE EVENT
+# =========================
+
 @client.event
 async def on_message(message):
+
+    global gra_pm
+    global odpowiedzi_pm
+    global punkty_pm
+    global aktualna_litera
 
     if message.author == client.user:
         return
 
+    # =========================
+    # PAŃSTWA MIASTA ODPOWIEDZI
+    # =========================
+
+    if (
+        gra_pm
+        and message.channel.id == KANAL_PM
+        and any(role.name == ROLA_PM for role in message.author.roles)
+    ):
+
+        if message.author.id not in odpowiedzi_pm:
+
+            odpowiedz = message.content.strip()
+
+            if odpowiedz.lower().startswith(aktualna_litera.lower()):
+
+                odpowiedzi_pm[message.author.id] = {
+                    "nick": message.author.name,
+                    "odpowiedz": odpowiedz
+                }
+
+    # =========================
     # PING
+    # =========================
+
     if message.content == "!ping":
         await message.channel.send("🏓 Pong!")
 
+    # =========================
     # LOSOWY UTWÓR
+    # =========================
+
     if message.content == "!utwór":
         await message.channel.send(
             f"🎵 Dethe poleca:\n{random.choice(utwory)}"
         )
 
+    # =========================
     # BUTELKA
+    # =========================
+
     if message.content == "!butelka":
 
         members = [
@@ -127,5 +215,144 @@ async def on_message(message):
         await message.channel.send(
             f"🍾 Butelka wskazuje: {osoba.mention}\n\n{wybor}"
         )
+
+    # =========================
+    # START GRY PM
+    # =========================
+
+    if message.content == "!gra-start":
+
+        if message.channel.id != KANAL_PM:
+            return
+
+        if gra_pm:
+            await message.channel.send("❌ Gra już trwa!")
+            return
+
+        gra_pm = True
+        punkty_pm = {}
+
+        start_msg = await message.channel.send(
+            "[ DETHE ]\n\n"
+            "Gra rozpoczyna się za 10 sekund..."
+        )
+
+        for i in range(10, 0, -1):
+
+            await start_msg.edit(
+                content=
+                f"[ DETHE ]\n\n"
+                f"Start za {i}..."
+            )
+
+            await asyncio.sleep(1)
+
+        # =========================
+        # RUNDY
+        # =========================
+
+        for runda in range(1, TOTAL_ROUNDS + 1):
+
+            odpowiedzi_pm = {}
+
+            kategoria = random.choice(CATEGORIES)
+            aktualna_litera = random.choice(LETTERS)
+
+            msg = await message.channel.send(
+                f"[ DETHE ]\n\n"
+                f"🎯 Kategoria: {kategoria}\n"
+                f"🔤 Litera: {aktualna_litera}\n\n"
+                f"⏳ Pozostały czas: {ROUND_TIME}s"
+            )
+
+            for czas in range(ROUND_TIME, 0, -1):
+
+                await msg.edit(
+                    content=
+                    f"[ DETHE ]\n\n"
+                    f"🎯 Kategoria: {kategoria}\n"
+                    f"🔤 Litera: {aktualna_litera}\n\n"
+                    f"⏳ Pozostały czas: {czas}s"
+                )
+
+                await asyncio.sleep(1)
+
+            wyniki = []
+
+            pierwsza = True
+
+            for user_id, data in odpowiedzi_pm.items():
+
+                pkt = 10
+
+                if pierwsza:
+                    pkt += 5
+                    pierwsza = False
+
+                if user_id not in punkty_pm:
+
+                    punkty_pm[user_id] = {
+                        "nick": data["nick"],
+                        "punkty": 0
+                    }
+
+                punkty_pm[user_id]["punkty"] += pkt
+
+                wyniki.append(
+                    f"✅ {data['nick']} — "
+                    f"{data['odpowiedz']} (+{pkt} pkt)"
+                )
+
+            if not wyniki:
+                wyniki.append("❌ Brak poprawnych odpowiedzi.")
+
+            ranking = sorted(
+                punkty_pm.values(),
+                key=lambda x: x["punkty"],
+                reverse=True
+            )
+
+            tabela = ""
+
+            for i, gracz in enumerate(ranking, start=1):
+
+                tabela += (
+                    f"{i}. "
+                    f"{gracz['nick']} — "
+                    f"{gracz['punkty']} pkt\n"
+                )
+
+            await message.channel.send(
+                f"[ KONIEC RUNDY {runda} ]\n\n"
+                + "\n".join(wyniki)
+                + "\n\n🏆 Ranking:\n"
+                + tabela
+            )
+
+            await asyncio.sleep(3)
+
+        # =========================
+        # KONIEC GRY
+        # =========================
+
+        if punkty_pm:
+
+            zwyciezca = max(
+                punkty_pm.values(),
+                key=lambda x: x["punkty"]
+            )
+
+            await message.channel.send(
+                f"[ DETHE ]\n\n"
+                f"🏆 ZWYCIĘZCA:\n"
+                f"{zwyciezca['nick']} — "
+                f"{zwyciezca['punkty']} pkt"
+            )
+
+        gra_pm = False
+
+# =========================
+# RUN
+# =========================
 
 client.run(TOKEN)
