@@ -413,37 +413,74 @@ async def on_message(message):
         return
 
     # =====================================
-    # BUTELKA
-    # =====================================
+# BUTELKA
+# =====================================
 
-    if message.content.lower() == "!butelka":
+if message.content.lower() == "!butelka":
 
-        members = [
-            member for member in message.guild.members
-            if not member.bot
-        ]
+    rola_butelka = discord.utils.get(
+        message.guild.roles,
+        name="BUTELKA"
+    )
 
-        if len(members) < 2:
-
-            await message.channel.send(
-                "❌ Za mało osób."
-            )
-
-            return
-
-        osoba1 = random.choice(members)
-        osoba2 = random.choice(members)
-
-        while osoba2 == osoba1:
-            osoba2 = random.choice(members)
+    if not rola_butelka:
 
         await message.channel.send(
-            f"🍾 Butelka wskazuje:\n\n"
-            f"👉 {osoba1.mention}\n"
-            f"❤️ {osoba2.mention}"
+            "❌ Nie znaleziono roli BUTELKA."
         )
 
         return
+
+    members = [
+        member for member in message.guild.members
+        if (
+            not member.bot
+            and rola_butelka in member.roles
+        )
+    ]
+
+    if len(members) < 1:
+
+        await message.channel.send(
+            "❌ Brak osób z rolą BUTELKA."
+        )
+
+        return
+
+    msg = await message.channel.send(
+        "🍾 Dethe kręci butelką..."
+    )
+
+    for i in ["3", "2", "1"]:
+
+        await asyncio.sleep(1)
+
+        await msg.edit(
+            content=
+            f"🍾 Dethe kręci butelką...\n\n"
+            f"⏳ {i}"
+        )
+
+    osoba = random.choice(members)
+
+    typ = random.choice([
+        "🟣 PRAWDA",
+        "🔥 WYZWANIE"
+    ])
+
+    await asyncio.sleep(1)
+
+    await msg.edit(
+        content=
+        f"╔════════════════╗\n"
+        f"      DETHE\n"
+        f"╚════════════════╝\n\n"
+        f"🍾 Butelka wybrała:\n\n"
+        f"👉 {osoba.mention}\n\n"
+        f"{typ}"
+    )
+
+    return
 
     # =====================================
     # UTWÓR
