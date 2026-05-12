@@ -2,6 +2,7 @@ import discord
 import random
 import os
 import asyncio
+import unicodedata
 
 from discord.ext import tasks
 from datetime import datetime
@@ -15,45 +16,7 @@ TOKEN = os.getenv("TOKEN")
 KANAL_SPOTIFY = 1501855557584162818
 KANAL_PM = 1503525539766337656
 
-ROLA_BUTELKA = "BUTELKA"
 ROLA_PM = "GRACZPM"
-
-# =========================================
-# PM SYSTEM
-# =========================================
-
-RUNDA_AKTYWNA = False
-AKTUALNA_KATEGORIA = None
-AKTUALNA_LITERA = None
-ODPOWIEDZI = {}
-PUNKTY = {}
-RUNDA_NUMER = 0
-MAX_RUND = 10
-
-KATEGORIE = {
-    "Jedzenie": "jedzenie.txt",
-    "Miasto": "miasta.txt",
-    "Państwo": "panstwa.txt",
-    "Zwierzę": "zwierzeta.txt",
-    "Film": "filmy.txt",
-    "Gra": "gry.txt",
-    "Kolor": "kolory.txt",
-    "Zawód": "zawody.txt",
-    "Roślina": "rosliny.txt",
-    "Serial": "seriale.txt",
-    "Sport": "sporty.txt",
-    "Instrument": "instrumenty.txt",
-    "Napój": "napoje.txt",
-    "Słodycz": "slodycze.txt",
-    "Fast food": "fastfood.txt",
-    "Owoc": "owoce.txt",
-    "Warzywo": "warzywa.txt",
-    "Kwiat": "kwiaty.txt",
-    "Mebel": "meble.txt"
-}
-
-LITERY = list("ABCDEFGHIJKLMNOPRSTUWYZ")
-WYKORZYSTANE_KATEGORIE = []
 
 # =========================================
 # DISCORD
@@ -63,30 +26,68 @@ intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 
 # =========================================
+# SYSTEM PM
+# =========================================
+
+pm_aktywne = False
+aktualna_kategoria = None
+aktualna_litera = None
+
+odpowiedzi = {}
+punkty = {}
+wykorzystane_kategorie = []
+wiadomosci_graczy = []
+
+MAX_RUND = 10
+
+KATEGORIE = {
+    "Jedzenie": "jedzenie.txt",
+    "Miasto": "miasta.txt",
+    "Państwo": "panstwa.txt",
+    "Zwierzę": "zwierzeta.txt",
+    "Film": "filmy.txt",
+    "Gra": "gry.txt"
+}
+
+LITERY = list("ABCDEFGHIJKLMNOPRSTUWYZ")
+
+SMIESZNE_TEKSTY = [
+    "🧠 Dethe szuka inteligentnych graczy...",
+    "🍕 Ładowanie chaosu i pizzy...",
+    "☠ System wykrył brak snu administracji.",
+    "👁 PM.SYSTEM obserwuje wasze odpowiedzi.",
+    "🌑 Chomik losujący kategorię właśnie się obudził.",
+    "💀 Dethe próbuje przypomnieć sobie alfabet.",
+]
+
+# =========================================
+# NORMALIZACJA
+# =========================================
+
+def normalize(text):
+
+    text = text.lower().strip()
+
+    text = unicodedata.normalize(
+        "NFD",
+        text
+    )
+
+    text = "".join(
+        c for c in text
+        if unicodedata.category(c) != "Mn"
+    )
+
+    return text
+
+# =========================================
 # SPOTIFY
 # =========================================
 
 utwory = [
-
-    # Imagine Dragons
     "https://open.spotify.com/track/0pqnGHJpmpxLKifKRmU6WP",
     "https://open.spotify.com/track/3LlAyCYU26dvFZBDUIMb7a",
-    "https://open.spotify.com/track/1NtIMM4N0cFa1dNzN15chl",
-    "https://open.spotify.com/track/62yJjFtgkhUrXktIoSjgP2",
-
-    # Lady Gaga
-    "https://open.spotify.com/track/6rLqjzGV5VMLDWEnuUqi8q",
-    "https://open.spotify.com/track/5R8dQOPq8haW94K7mgERlO",
-    "https://open.spotify.com/track/0SiywuOBRcynK0uKGWdCnn",
-
-    # Sabrina Carpenter
-    "https://open.spotify.com/track/2qSkIjg1o9h3YT9RAgYN75",
-    "https://open.spotify.com/track/5N3hjp1WNayUPZrA8kJmJP",
-
-    # Rock
-    "https://open.spotify.com/track/7ouMYWpwJ422jRcDASZB7P",
-    "https://open.spotify.com/track/58ge6dfP91o9oXMzq3XkIS",
-    "https://open.spotify.com/track/2nLtzopw4rPReszdYBJU6h"
+    "https://open.spotify.com/track/1NtIMM4N0cFa1dNzN15chl"
 ]
 
 # =========================================
@@ -119,12 +120,146 @@ async def codzienny_utwor():
         if kanal:
 
             await kanal.send(
-                f"🎶 Dzisiejszy utwór od Dethe:\n"
+                f"🎵 Dzisiejszy utwór od Dethe:\n"
                 f"{random.choice(utwory)}"
             )
 
-            # anty duplikat
             await asyncio.sleep(180)
+
+# =========================================
+# PM GAME TASK
+# =========================================
+
+async def start_pm_game(channel):
+
+    global pm_aktywne
+    global aktualna_kategoria
+    global aktualna_litera
+    global odpowiedzi
+    global punkty
+    global wykorzystane_kategorie
+    global wiadomosci_graczy
+
+    punkty = {}
+    wykorzystane_kategorie = []
+
+    start_msg = await channel.send(
+        f"╔════════════════╗\n"
+        f"      DETHE-PM\n"
+        f"╚════════════════╝\n\n"
+        f"{random.choice(SMIESZNE_TEKSTY)}\n\n"
+        f"⏳ Start za 10 sekund"
+    )
+
+    for i in range(10, 0, -1):
+
+        if not pm_aktywne:
+            return
+
+        await start_msg.edit(
+            content=
+            f"╔════════════════╗\n"
+            f"      DETHE-PM\n"
+            f"╚════════════════╝\n\n"
+            f"{random.choice(SMIESZNE_TEKSTY)}\n\n"
+            f"⏳ Start za: {i}"
+        )
+
+        await asyncio.sleep(1)
+
+    for runda in range(1, MAX_RUND + 1):
+
+        if not pm_aktywne:
+            return
+
+        odpowiedzi = {}
+        wiadomosci_graczy = []
+
+        dostepne = [
+            k for k in KATEGORIE.keys()
+            if k not in wykorzystane_kategorie
+        ]
+
+        if not dostepne:
+            break
+
+        aktualna_kategoria = random.choice(
+            dostepne
+        )
+
+        wykorzystane_kategorie.append(
+            aktualna_kategoria
+        )
+
+        aktualna_litera = random.choice(
+            LITERY
+        )
+
+        runda_msg = await channel.send(
+            f"╔════════════════╗\n"
+            f"      DETHE-PM\n"
+            f"╚════════════════╝\n\n"
+            f"{random.choice(SMIESZNE_TEKSTY)}\n\n"
+            f"🟣 RUNDA {runda}/{MAX_RUND}\n\n"
+            f"📂 Kategoria: {aktualna_kategoria}\n"
+            f"🔤 Litera: {aktualna_litera}\n\n"
+            f"⏳ 15 sekund"
+        )
+
+        for i in range(15, 0, -1):
+
+            if not pm_aktywne:
+                return
+
+            await runda_msg.edit(
+                content=
+                f"╔════════════════╗\n"
+                f"      DETHE-PM\n"
+                f"╚════════════════╝\n\n"
+                f"{random.choice(SMIESZNE_TEKSTY)}\n\n"
+                f"🟣 RUNDA {runda}/{MAX_RUND}\n\n"
+                f"📂 Kategoria: {aktualna_kategoria}\n"
+                f"🔤 Litera: {aktualna_litera}\n\n"
+                f"⏳ {i} sekund"
+            )
+
+            await asyncio.sleep(1)
+
+        for msg in wiadomosci_graczy:
+
+            try:
+                await msg.delete()
+            except:
+                pass
+
+        await channel.send(
+            "⚠ Koniec rundy."
+        )
+
+        await asyncio.sleep(2)
+
+    pm_aktywne = False
+
+    ranking = sorted(
+        punkty.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )
+
+    tekst = (
+        "╔════════════════╗\n"
+        "     PM.RESULTS\n"
+        "╚════════════════╝\n\n"
+    )
+
+    for i, (gracz, pkt) in enumerate(
+        ranking,
+        start=1
+    ):
+
+        tekst += f"{i}. {gracz} — {pkt} pkt\n"
+
+    await channel.send(tekst)
 
 # =========================================
 # MESSAGE
@@ -133,13 +268,10 @@ async def codzienny_utwor():
 @client.event
 async def on_message(message):
 
-    global RUNDA_AKTYWNA
-    global RUNDA_NUMER
-    global AKTUALNA_KATEGORIA
-    global AKTUALNA_LITERA
-    global ODPOWIEDZI
-    global PUNKTY
-    global WYKORZYSTANE_KATEGORIE
+    global pm_aktywne
+    global odpowiedzi
+    global punkty
+    global wiadomosci_graczy
 
     if message.author.bot:
         return
@@ -173,35 +305,21 @@ async def on_message(message):
         return
 
     # =====================================
-    # BUTELKA
+    # START PM
     # =====================================
 
-    if message.content.lower() == "!butelka":
+    if message.content.lower() == "!start":
 
-        members = [
-            member for member in message.guild.members
-            if not member.bot
-        ]
-
-        if len(members) < 2:
-
-            await message.channel.send(
-                "❌ Za mało osób."
-            )
-
+        if message.channel.id != KANAL_PM:
             return
 
-        osoba1 = random.choice(members)
+        if pm_aktywne:
+            return
 
-        osoba2 = random.choice(members)
+        pm_aktywne = True
 
-        while osoba2 == osoba1:
-            osoba2 = random.choice(members)
-
-        await message.channel.send(
-            f"🍾 Butelka wskazuje:\n\n"
-            f"👉 {osoba1.mention}\n"
-            f"❤️ {osoba2.mention}"
+        asyncio.create_task(
+            start_pm_game(message.channel)
         )
 
         return
@@ -212,137 +330,11 @@ async def on_message(message):
 
     if message.content.lower() == "!stop":
 
-        if message.channel.id != KANAL_PM:
-            return
-
-        RUNDA_AKTYWNA = False
+        pm_aktywne = False
 
         await message.channel.send(
-            "🛑 Gra została zatrzymana."
+            "🛑 Dethe zatrzymał grę."
         )
-
-        return
-
-    # =====================================
-    # START PM
-    # =====================================
-
-    if message.content.lower() == "!start":
-
-        if RUNDA_AKTYWNA:
-            return
-
-        if message.channel.id != KANAL_PM:
-            return
-
-        await message.channel.purge(limit=5)
-
-        print("START DETHE-PM")
-
-        if RUNDA_AKTYWNA:
-
-            await message.channel.send(
-                "⚠ Gra już trwa."
-            )
-
-            return
-
-        RUNDA_AKTYWNA = True
-        RUNDA_NUMER = 0
-        PUNKTY = {}
-        WYKORZYSTANE_KATEGORIE = []
-
-        start_msg = await message.channel.send(
-            "🟣 PM.SYSTEM ONLINE\n\n"
-            "Rozgrywka rozpocznie się za 10 sekund..."
-        )
-
-        for i in range(10, 0, -1):
-
-            if not RUNDA_AKTYWNA:
-                return
-
-            await start_msg.edit(
-                content=
-                f"🟣 PM.SYSTEM ONLINE\n\n"
-                f"Start za: {i}"
-            )
-
-            await asyncio.sleep(1)
-
-        for _ in range(MAX_RUND):
-
-            if not RUNDA_AKTYWNA:
-                return
-
-            RUNDA_NUMER += 1
-            ODPOWIEDZI = {}
-
-            dostepne = [
-                k for k in KATEGORIE.keys()
-                if k not in WYKORZYSTANE_KATEGORIE
-            ]
-
-            if not dostepne:
-                break
-
-            AKTUALNA_KATEGORIA = random.choice(dostepne)
-            WYKORZYSTANE_KATEGORIE.append(AKTUALNA_KATEGORIA)
-
-            AKTUALNA_LITERA = random.choice(LITERY)
-
-            runda_msg = await message.channel.send(
-                f"╔════════════════╗\n"
-                f"      DETHE-PM\n"
-                f"╚════════════════╝\n\n"
-                f"🟣 RUNDA {RUNDA_NUMER}/{MAX_RUND}\n\n"
-                f"📂 Kategoria: {AKTUALNA_KATEGORIA}\n"
-                f"🔤 Litera: {AKTUALNA_LITERA}\n\n"
-                f"⏳ 15 sekund"
-            )
-
-            for i in range(15, 0, -1):
-
-                if not RUNDA_AKTYWNA:
-                    return
-
-                await runda_msg.edit(
-                    content=
-                    f"╔════════════════╗\n"
-                    f"      DETHE-PM\n"
-                    f"╚════════════════╝\n\n"
-                    f"🟣 RUNDA {RUNDA_NUMER}/{MAX_RUND}\n\n"
-                    f"📂 Kategoria: {AKTUALNA_KATEGORIA}\n"
-                    f"🔤 Litera: {AKTUALNA_LITERA}\n\n"
-                    f"⏳ {i} sekund"
-                )
-
-                await asyncio.sleep(1)
-
-            await message.channel.send(
-                "⚠ Koniec rundy."
-            )
-
-            await asyncio.sleep(2)
-
-        RUNDA_AKTYWNA = False
-
-        ranking = sorted(
-            PUNKTY.items(),
-            key=lambda x: x[1],
-            reverse=True
-        )
-
-        tekst = (
-            "╔════════════════╗\n"
-            "     PM.RESULTS\n"
-            "╚════════════════╝\n\n"
-        )
-
-        for i, (gracz, pkt) in enumerate(ranking, start=1):
-            tekst += f"{i}. {gracz} — {pkt} pkt\n"
-
-        await message.channel.send(tekst)
 
         return
 
@@ -350,7 +342,7 @@ async def on_message(message):
     # ODPOWIEDZI PM
     # =====================================
 
-    if RUNDA_AKTYWNA:
+    if pm_aktywne:
 
         if message.channel.id != KANAL_PM:
             return
@@ -371,16 +363,24 @@ async def on_message(message):
         if not odpowiedz:
             return
 
-        if message.author.id in ODPOWIEDZI:
+        if message.author.id in odpowiedzi:
             return
 
-        if not odpowiedz.lower().startswith(
-            AKTUALNA_LITERA.lower()
+        wiadomosci_graczy.append(
+            message
+        )
+
+        odp_norm = normalize(odpowiedz)
+
+        if not odp_norm.startswith(
+            normalize(aktualna_litera)
         ):
+
             await message.add_reaction("❌")
+
             return
 
-        plik = KATEGORIE[AKTUALNA_KATEGORIA]
+        plik = KATEGORIE[aktualna_kategoria]
 
         poprawne = []
 
@@ -393,25 +393,25 @@ async def on_message(message):
             ) as f:
 
                 poprawne = [
-                    x.strip().lower()
+                    normalize(x.strip())
                     for x in f.readlines()
                 ]
 
-        if odpowiedz.lower() in poprawne:
+        if odp_norm in poprawne:
 
-            ODPOWIEDZI[message.author.id] = odpowiedz
+            odpowiedzi[message.author.id] = odpowiedz
 
-            if len(ODPOWIEDZI) == 1:
+            if len(odpowiedzi) == 1:
                 pkt = 15
             else:
                 pkt = 10
 
             nick = message.author.display_name
 
-            if nick not in PUNKTY:
-                PUNKTY[nick] = 0
+            if nick not in punkty:
+                punkty[nick] = 0
 
-            PUNKTY[nick] += pkt
+            punkty[nick] += pkt
 
             await message.add_reaction("✅")
 
