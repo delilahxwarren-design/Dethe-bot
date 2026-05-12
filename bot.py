@@ -25,6 +25,9 @@ ROLA_PM = "GRACZPM"
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 
+# BLOKADA DUPLIKATÓW
+last_messages = set()
+
 # =========================================
 # SYSTEM PM
 # =========================================
@@ -57,7 +60,7 @@ SMIESZNE_TEKSTY = [
     "☠ System wykrył brak snu administracji.",
     "👁 PM.SYSTEM obserwuje wasze odpowiedzi.",
     "🌑 Chomik losujący kategorię właśnie się obudził.",
-    "💀 Dethe próbuje przypomnieć sobie alfabet.",
+    "💀 Dethe próbuje przypomnieć sobie alfabet."
 ]
 
 # =========================================
@@ -127,7 +130,7 @@ async def codzienny_utwor():
             await asyncio.sleep(180)
 
 # =========================================
-# PM GAME TASK
+# PM GAME
 # =========================================
 
 async def start_pm_game(channel):
@@ -275,6 +278,16 @@ async def on_message(message):
 
     if message.author.bot:
         return
+
+    # BLOKADA DUPLIKATÓW
+
+    if message.id in last_messages:
+        return
+
+    last_messages.add(message.id)
+
+    if len(last_messages) > 1000:
+        last_messages.clear()
 
     # =====================================
     # PING
