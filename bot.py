@@ -134,54 +134,27 @@ def normalize(text):
 
 utwory = [
 
-    # The Weeknd
     "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b",
     "https://open.spotify.com/track/7MXVkk9YMctZqd1Srtv4MB",
-
-    # Arctic Monkeys
     "https://open.spotify.com/track/5XeFesFbtLpXzIVDNQP22n",
     "https://open.spotify.com/track/0NdTUS4UiNYCNn5FgVqKQY",
-
-    # Billie Eilish
     "https://open.spotify.com/track/2Fxmhks0bxGSBdJ92vM42m",
     "https://open.spotify.com/track/3PfIrDoz19wz7qK7tYeu62",
-
-    # Chase Atlantic
     "https://open.spotify.com/track/2NmsngXHeC1GQ9wWrzhOMf",
     "https://open.spotify.com/track/5yY9lUy8nbvjM1Uyo1Uqoc",
-
-    # Måneskin
     "https://open.spotify.com/track/776AftMmFFAWUIEAb3lHhw",
     "https://open.spotify.com/track/1OcSfkeCg9hRC2sFKB4IMJ",
-
-    # Lady Gaga
     "https://open.spotify.com/track/6rLqjzGV5VMLDWEnuUqi8q",
     "https://open.spotify.com/track/5R8dQOPq8haW94K7mgERlO",
-
-    # Sabrina Carpenter
     "https://open.spotify.com/track/2qSkIjg1o9h3YT9RAgYN75",
     "https://open.spotify.com/track/5N3hjp1WNayUPZrA8kJmJP",
-
-    # Imagine Dragons
     "https://open.spotify.com/track/0pqnGHJpmpxLKifKRmU6WP",
     "https://open.spotify.com/track/62yJjFtgkhUrXktIoSjgP2",
-
-    # Melanie Martinez
     "https://open.spotify.com/track/3zksbXteOCeSusJ5Xltr3t",
     "https://open.spotify.com/track/7wTA0NKIm6T7nP2kaymU2a",
-
-    # Rock
     "https://open.spotify.com/track/58ge6dfP91o9oXMzq3XkIS",
-    "https://open.spotify.com/track/2nLtzopw4rPReszdYBJU6h",
-
-    # Extra
-    "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh",
-    "https://open.spotify.com/track/1BxfuPKGuaTgP7aM0Bbdwr",
-    "https://open.spotify.com/track/4RvWPyQ5RL0ao9LPZeSouE",
-    "https://open.spotify.com/track/6habFhsOp2NvshLv26DqMb",
-    "https://open.spotify.com/track/3DarAbFujv6eYNliUTyqtz"
-
-    ]
+    "https://open.spotify.com/track/2nLtzopw4rPReszdYBJU6h"
+]
 
 last_song_day = None
 
@@ -413,74 +386,74 @@ async def on_message(message):
         return
 
     # =====================================
-# BUTELKA
-# =====================================
+    # BUTELKA
+    # =====================================
 
-if message.content.lower() == "!butelka":
+    if message.content.lower() == "!butelka":
 
-    rola_butelka = discord.utils.get(
-        message.guild.roles,
-        name="BUTELKA"
-    )
-
-    if not rola_butelka:
-
-        await message.channel.send(
-            "❌ Nie znaleziono roli BUTELKA."
+        rola_butelka = discord.utils.get(
+            message.guild.roles,
+            name="BUTELKA"
         )
 
-        return
+        if not rola_butelka:
 
-    members = [
-        member for member in message.guild.members
-        if (
-            not member.bot
-            and rola_butelka in member.roles
+            await message.channel.send(
+                "❌ Nie znaleziono roli BUTELKA."
+            )
+
+            return
+
+        members = [
+            member for member in message.guild.members
+            if (
+                not member.bot
+                and rola_butelka in member.roles
+            )
+        ]
+
+        if len(members) < 1:
+
+            await message.channel.send(
+                "❌ Brak osób z rolą BUTELKA."
+            )
+
+            return
+
+        msg = await message.channel.send(
+            "🍾 Dethe kręci butelką..."
         )
-    ]
 
-    if len(members) < 1:
+        for i in ["3", "2", "1"]:
 
-        await message.channel.send(
-            "❌ Brak osób z rolą BUTELKA."
-        )
+            await asyncio.sleep(1)
 
-        return
+            await msg.edit(
+                content=
+                f"🍾 Dethe kręci butelką...\n\n"
+                f"⏳ {i}"
+            )
 
-    msg = await message.channel.send(
-        "🍾 Dethe kręci butelką..."
-    )
+        osoba = random.choice(members)
 
-    for i in ["3", "2", "1"]:
+        typ = random.choice([
+            "🟣 PRAWDA",
+            "🔥 WYZWANIE"
+        ])
 
         await asyncio.sleep(1)
 
         await msg.edit(
             content=
-            f"🍾 Dethe kręci butelką...\n\n"
-            f"⏳ {i}"
+            f"╔════════════════╗\n"
+            f"      DETHE\n"
+            f"╚════════════════╝\n\n"
+            f"🍾 Butelka wybrała:\n\n"
+            f"👉 {osoba.mention}\n\n"
+            f"{typ}"
         )
 
-    osoba = random.choice(members)
-
-    typ = random.choice([
-        "🟣 PRAWDA",
-        "🔥 WYZWANIE"
-    ])
-
-    await asyncio.sleep(1)
-
-    await msg.edit(
-        content=
-        f"╔════════════════╗\n"
-        f"      DETHE\n"
-        f"╚════════════════╝\n\n"
-        f"🍾 Butelka wybrała:\n\n"
-        f"👉 {osoba.mention}\n\n"
-        f"{typ}"
-    )
-
-    return
+        return
 
     # =====================================
     # UTWÓR
