@@ -331,7 +331,7 @@ async def start_pm_game(channel):
 
     tekst = (
         "╔════════════════╗\n"
-        "     PM.RESULTS\n"
+        "     WYNIKI\n"
         "╚════════════════╝\n\n"
     )
 
@@ -386,23 +386,46 @@ async def on_message(message):
         return
 
     # =====================================
-    # BUTELKA
-    # =====================================
+# BUTELKA
+# =====================================
 
-    if message.content.lower() == "!butelka":
+if message.content.lower() == "!butelka":
 
-        rola_butelka = discord.utils.get(
-            message.guild.roles,
-            name="BUTELKA"
+    rola_butelka = discord.utils.get(
+        message.guild.roles,
+        name="BUTELKA"
+    )
+
+    rola_gosc = discord.utils.get(
+        message.guild.roles,
+        name="GOSC"
+    )
+
+    if not rola_butelka:
+
+        await message.channel.send(
+            "❌ Nie znaleziono roli BUTELKA."
         )
 
-        if not rola_butelka:
+        return
 
-            await message.channel.send(
-                "❌ Nie znaleziono roli BUTELKA."
+    # KANAŁ DOMOWNIKÓW
+    if message.channel.id == 1503091932321022122:
+
+        members = [
+            member for member in message.guild.members
+            if (
+                not member.bot
+                and rola_butelka in member.roles
+                and (
+                    rola_gosc is None
+                    or rola_gosc not in member.roles
+                )
             )
+        ]
 
-            return
+    # RESZTA KANAŁÓW
+    else:
 
         members = [
             member for member in message.guild.members
@@ -411,6 +434,49 @@ async def on_message(message):
                 and rola_butelka in member.roles
             )
         ]
+
+    if len(members) < 1:
+
+        await message.channel.send(
+            "❌ Brak osób do losowania."
+        )
+
+        return
+
+    msg = await message.channel.send(
+        "🍾 Dethe kręci butelką..."
+    )
+
+    for i in ["3", "2", "1"]:
+
+        await asyncio.sleep(1)
+
+        await msg.edit(
+            content=
+            f"🍾 Dethe kręci butelką...\n\n"
+            f"⏳ {i}"
+        )
+
+    osoba = random.choice(members)
+
+    typ = random.choice([
+        "🟣 PRAWDA",
+        "🔥 WYZWANIE"
+    ])
+
+    await asyncio.sleep(1)
+
+    await msg.edit(
+        content=
+        f"╔════════════════╗\n"
+        f"      DETHE\n"
+        f"╚════════════════╝\n\n"
+        f"🍾 Butelka wybrała:\n\n"
+        f"👉 {osoba.mention}\n\n"
+        f"{typ}"
+    )
+
+    return
 
         if len(members) < 1:
 
