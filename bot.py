@@ -32,7 +32,7 @@ client = discord.Client(intents=intents)
 last_messages = set()
 
 # =========================================
-# PM SYSTEM
+# SYSTEM PM
 # =========================================
 
 pm_aktywne = False
@@ -47,12 +47,27 @@ wiadomosci_graczy = []
 MAX_RUND = 10
 
 KATEGORIE = {
-    "Jedzenie": "jedzenie.txt",
-    "Miasto": "miasta.txt",
     "Państwo": "panstwa.txt",
+    "Miasto": "miasta.txt",
     "Zwierzę": "zwierzeta.txt",
+    "Imię": "imiona.txt",
+    "Rzecz": "rzeczy.txt",
+    "Jedzenie": "jedzenie.txt",
+    "Kolor": "kolory.txt",
+    "Zawód": "zawody.txt",
+    "Roślina": "rosliny.txt",
+    "Gra": "gry.txt",
     "Film": "filmy.txt",
-    "Gra": "gry.txt"
+    "Serial": "seriale.txt",
+    "Sport": "sporty.txt",
+    "Instrument": "instrumenty.txt",
+    "Napój": "napoje.txt",
+    "Słodycz": "slodycze.txt",
+    "Fast food": "fastfood.txt",
+    "Owoc": "owoce.txt",
+    "Warzywo": "warzywa.txt",
+    "Kwiat": "kwiaty.txt",
+    "Mebel": "meble.txt"
 }
 
 LITERY = list("ABCDEFGHIJKLMNOPRSTUWYZ")
@@ -60,12 +75,34 @@ LITERY = list("ABCDEFGHIJKLMNOPRSTUWYZ")
 SMIESZNE_TEKSTY = [
     "🧠 Dethe szuka inteligentnych graczy...",
     "🍕 Ładowanie chaosu i pizzy...",
-    "☠ System wykrył brak snu administracji.",
+    "☠ System wykrył brak snu opiekunów.",
     "👁 PM.SYSTEM obserwuje wasze odpowiedzi.",
     "🌑 Chomik losujący kategorię właśnie się obudził.",
     "💀 Dethe próbuje przypomnieć sobie alfabet.",
     "🎮 Ładowanie chaosu...",
-    "⚠ Administracja nie odpowiada za utratę IQ."
+    "⚠ Opiekunowie nie odpowiadają za utratę IQ.",
+    "🟣 Dethe otworzył księgę państw i miast.",
+    "👻 System sprawdza czy gracze żyją.",
+    "🍟 Dethe zgubił odpowiedzi i improwizuje.",
+    "🧃 Trwa karmienie chomika serwerowego.",
+    "🔮 Losowanie kategorii przez czarną magię.",
+    "🌌 PM.SYSTEM wszedł w tryb nocnego chaosu.",
+    "🛸 Obcy właśnie sprawdzają waszą ortografię.",
+    "📚 Dethe udaje że zna wszystkie odpowiedzi.",
+    "⚡ Serwer przeżył kolejne odpalenie gry.",
+    "🎲 Dethe rzuca kostką przeznaczenia.",
+    "🕷 Pająk w kodzie właśnie coś naprawił.",
+    "🍩 Opiekunowie znowu zapomnieli spać.",
+    "📡 Skanowanie mózgów graczy...",
+    "🧠 IQ serwera chwilowo spadło do 3.",
+    "🌪 System wykrył nadchodzący chaos.",
+    "🎭 Dethe udaje profesjonalnego bota.",
+    "🐸 Żaba od kodu daje wam jeszcze jedną szansę.",
+    "💜 Fioletowy system aktywowany.",
+    "🕯 Dethe przywołuje poprawne odpowiedzi.",
+    "🚨 Alarm: gracze zaczynają myśleć.",
+    "📦 Ładowanie losowych liter...",
+    "🧿 PM.SYSTEM patrzy."
 ]
 
 # =========================================
@@ -96,39 +133,31 @@ utwory = [
 
     # Imagine Dragons
     "https://open.spotify.com/track/0pqnGHJpmpxLKifKRmU6WP",
-    "https://open.spotify.com/track/3LlAyCYU26dvFZBDUIMb7a",
-    "https://open.spotify.com/track/1NtIMM4N0cFa1dNzN15chl",
-    "https://open.spotify.com/track/62yJjFtgkhUrXktIoSjgP2",
-
-    # Lady Gaga
-    "https://open.spotify.com/track/6rLqjzGV5VMLDWEnuUqi8q",
-    "https://open.spotify.com/track/5R8dQOPq8haW94K7mgERlO",
-    "https://open.spotify.com/track/0SiywuOBRcynK0uKGWdCnn",
-
-    # Sabrina Carpenter
-    "https://open.spotify.com/track/2qSkIjg1o9h3YT9RAgYN75",
-    "https://open.spotify.com/track/5N3hjp1WNayUPZrA8kJmJP",
-
-    # Rock
-    "https://open.spotify.com/track/7ouMYWpwJ422jRcDASZB7P",
-    "https://open.spotify.com/track/58ge6dfP91o9oXMzq3XkIS",
-    "https://open.spotify.com/track/2nLtzopw4rPReszdYBJU6h",
+    "https://open.spotify.com/track/7MXVkk9YMctZqd1Srtv4MB",
 
     # Arctic Monkeys
     "https://open.spotify.com/track/5XeFesFbtLpXzIVDNQP22n",
-    "https://open.spotify.com/track/0NdTUS4UiNYCNn5FgVqKQY",
 
     # Billie Eilish
     "https://open.spotify.com/track/2Fxmhks0bxGSBdJ92vM42m",
-    "https://open.spotify.com/track/3PfIrDoz19wz7qK7tYeu62",
-
-    # Chase Atlantic
-    "https://open.spotify.com/track/2NmsngXHeC1GQ9wWrzhOMf",
-    "https://open.spotify.com/track/5yY9lUy8nbvjM1Uyo1Uqoc",
 
     # The Weeknd
     "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b",
-    "https://open.spotify.com/track/7MXVkk9YMctZqd1Srtv4MB"
+
+    # Chase Atlantic
+    "https://open.spotify.com/track/2NmsngXHeC1GQ9wWrzhOMf",
+
+    # Måneskin
+    "https://open.spotify.com/track/776AftMmFFAWUIEAb3lHhw",
+
+    # Lady Gaga
+    "https://open.spotify.com/track/6rLqjzGV5VMLDWEnuUqi8q",
+
+    # Sabrina Carpenter
+    "https://open.spotify.com/track/2qSkIjg1o9h3YT9RAgYN75",
+
+    # Rock
+    "https://open.spotify.com/track/58ge6dfP91o9oXMzq3XkIS"
 ]
 
 last_song_day = None
@@ -233,17 +262,13 @@ async def start_pm_game(channel):
         if not dostepne:
             break
 
-        aktualna_kategoria = random.choice(
-            dostepne
-        )
+        aktualna_kategoria = random.choice(dostepne)
 
         wykorzystane_kategorie.append(
             aktualna_kategoria
         )
 
-        aktualna_litera = random.choice(
-            LITERY
-        )
+        aktualna_litera = random.choice(LITERY)
 
         runda_msg = await channel.send(
             f"╔════════════════╗\n"
@@ -341,8 +366,6 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    # BLOKADA DUPLIKATÓW
-
     if message.id in last_messages:
         return
 
@@ -438,9 +461,7 @@ async def on_message(message):
         if message.author.id in odpowiedzi:
             return
 
-        wiadomosci_graczy.append(
-            message
-        )
+        wiadomosci_graczy.append(message)
 
         odp_norm = normalize(odpowiedz)
 
