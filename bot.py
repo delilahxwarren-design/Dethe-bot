@@ -537,6 +537,110 @@ async def on_message(message):
         )
 
         return
+        # =====================================
+# KOLOR HEX
+# =====================================
+
+if message.content.lower().startswith("!kolor"):
+
+    args = message.content.split()
+
+    if len(args) < 2:
+
+        await message.channel.send(
+            "🎨 Użycie:\n"
+            "!kolor #ff00ff"
+        )
+
+        return
+
+    hex_kolor = args[1]
+
+    if not hex_kolor.startswith("#"):
+
+        await message.channel.send(
+            "❌ Podaj kolor HEX."
+        )
+
+        return
+
+    if len(hex_kolor) != 7:
+
+        await message.channel.send(
+            "❌ Zły format HEX."
+        )
+
+        return
+
+    try:
+
+        kolor_int = int(
+            hex_kolor[1:],
+            16
+        )
+
+    except:
+
+        await message.channel.send(
+            "❌ Niepoprawny HEX."
+        )
+
+        return
+
+    guild = message.guild
+
+    nazwa_roli = message.author.display_name
+
+    # =================================
+    # USUWANIE STARYCH RÓL KOLORÓW
+    # =================================
+
+    for rola in message.author.roles:
+
+        if rola.name == nazwa_roli:
+
+            try:
+                await message.author.remove_roles(
+                    rola
+                )
+            except:
+                pass
+
+    rola = discord.utils.get(
+        guild.roles,
+        name=nazwa_roli
+    )
+
+    # =================================
+    # TWORZENIE ROLI
+    # =================================
+
+    if not rola:
+
+        rola = await guild.create_role(
+            name=nazwa_roli,
+            colour=discord.Colour(
+                kolor_int
+            )
+        )
+
+    else:
+
+        await rola.edit(
+            colour=discord.Colour(
+                kolor_int
+            )
+        )
+
+    await message.author.add_roles(
+        rola
+    )
+
+    await message.channel.send(
+        f"🎨 {message.author.mention} ustawił własny kolor."
+    )
+
+    return
 
     # =====================================
     # START PM
