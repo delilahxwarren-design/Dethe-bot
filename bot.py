@@ -25,11 +25,14 @@ ROLA_PM = "GRACZPM"
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 
+# =========================================
 # BLOKADA DUPLIKATÓW
+# =========================================
+
 last_messages = set()
 
 # =========================================
-# SYSTEM PM
+# PM SYSTEM
 # =========================================
 
 pm_aktywne = False
@@ -60,7 +63,9 @@ SMIESZNE_TEKSTY = [
     "☠ System wykrył brak snu administracji.",
     "👁 PM.SYSTEM obserwuje wasze odpowiedzi.",
     "🌑 Chomik losujący kategorię właśnie się obudził.",
-    "💀 Dethe próbuje przypomnieć sobie alfabet."
+    "💀 Dethe próbuje przypomnieć sobie alfabet.",
+    "🎮 Ładowanie chaosu...",
+    "⚠ Administracja nie odpowiada za utratę IQ."
 ]
 
 # =========================================
@@ -88,10 +93,45 @@ def normalize(text):
 # =========================================
 
 utwory = [
+
+    # Imagine Dragons
     "https://open.spotify.com/track/0pqnGHJpmpxLKifKRmU6WP",
     "https://open.spotify.com/track/3LlAyCYU26dvFZBDUIMb7a",
-    "https://open.spotify.com/track/1NtIMM4N0cFa1dNzN15chl"
+    "https://open.spotify.com/track/1NtIMM4N0cFa1dNzN15chl",
+    "https://open.spotify.com/track/62yJjFtgkhUrXktIoSjgP2",
+
+    # Lady Gaga
+    "https://open.spotify.com/track/6rLqjzGV5VMLDWEnuUqi8q",
+    "https://open.spotify.com/track/5R8dQOPq8haW94K7mgERlO",
+    "https://open.spotify.com/track/0SiywuOBRcynK0uKGWdCnn",
+
+    # Sabrina Carpenter
+    "https://open.spotify.com/track/2qSkIjg1o9h3YT9RAgYN75",
+    "https://open.spotify.com/track/5N3hjp1WNayUPZrA8kJmJP",
+
+    # Rock
+    "https://open.spotify.com/track/7ouMYWpwJ422jRcDASZB7P",
+    "https://open.spotify.com/track/58ge6dfP91o9oXMzq3XkIS",
+    "https://open.spotify.com/track/2nLtzopw4rPReszdYBJU6h",
+
+    # Arctic Monkeys
+    "https://open.spotify.com/track/5XeFesFbtLpXzIVDNQP22n",
+    "https://open.spotify.com/track/0NdTUS4UiNYCNn5FgVqKQY",
+
+    # Billie Eilish
+    "https://open.spotify.com/track/2Fxmhks0bxGSBdJ92vM42m",
+    "https://open.spotify.com/track/3PfIrDoz19wz7qK7tYeu62",
+
+    # Chase Atlantic
+    "https://open.spotify.com/track/2NmsngXHeC1GQ9wWrzhOMf",
+    "https://open.spotify.com/track/5yY9lUy8nbvjM1Uyo1Uqoc",
+
+    # The Weeknd
+    "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b",
+    "https://open.spotify.com/track/7MXVkk9YMctZqd1Srtv4MB"
 ]
+
+last_song_day = None
 
 # =========================================
 # READY
@@ -112,9 +152,18 @@ async def on_ready():
 @tasks.loop(minutes=1)
 async def codzienny_utwor():
 
+    global last_song_day
+
     teraz = datetime.now()
 
-    if teraz.hour == 21 and 30 <= teraz.minute <= 32:
+    if teraz.hour == 21 and teraz.minute == 30:
+
+        dzis = teraz.date()
+
+        if last_song_day == dzis:
+            return
+
+        last_song_day = dzis
 
         kanal = client.get_channel(
             KANAL_SPOTIFY
@@ -126,8 +175,6 @@ async def codzienny_utwor():
                 f"🎵 Dzisiejszy utwór od Dethe:\n"
                 f"{random.choice(utwory)}"
             )
-
-            await asyncio.sleep(180)
 
 # =========================================
 # PM GAME
@@ -236,12 +283,21 @@ async def start_pm_game(channel):
                 pass
 
         await channel.send(
-            "⚠ Koniec rundy."
+            "━━━━━━━━━━━━━━━━━━\n"
+            "⏳ CZAS MINĄŁ\n"
+            "━━━━━━━━━━━━━━━━━━"
         )
 
-        await asyncio.sleep(2)
+        await asyncio.sleep(3)
 
     pm_aktywne = False
+
+    await channel.send(
+        "🏁 Gra zakończona!\n"
+        "📊 Trwa liczenie punktów..."
+    )
+
+    await asyncio.sleep(3)
 
     ranking = sorted(
         punkty.items(),
@@ -255,12 +311,18 @@ async def start_pm_game(channel):
         "╚════════════════╝\n\n"
     )
 
-    for i, (gracz, pkt) in enumerate(
-        ranking,
-        start=1
-    ):
+    if not ranking:
 
-        tekst += f"{i}. {gracz} — {pkt} pkt\n"
+        tekst += "Nikt nie zdobył punktów."
+
+    else:
+
+        for i, (gracz, pkt) in enumerate(
+            ranking,
+            start=1
+        ):
+
+            tekst += f"{i}. {gracz} — {pkt} pkt\n"
 
     await channel.send(tekst)
 
@@ -368,10 +430,7 @@ async def on_message(message):
         if rola not in message.author.roles:
             return
 
-        if not message.content.startswith("!"):
-            return
-
-        odpowiedz = message.content[1:].strip()
+        odpowiedz = message.content.strip()
 
         if not odpowiedz:
             return
