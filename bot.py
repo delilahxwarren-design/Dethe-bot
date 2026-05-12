@@ -338,8 +338,6 @@ async def on_message(message):
 
             return
 
-        # DOMOWNICY
-
         if message.channel.id == KANAL_BUTELKA_DOM:
 
             members = [
@@ -353,8 +351,6 @@ async def on_message(message):
                     )
                 )
             ]
-
-        # RESZTA
 
         else:
 
@@ -471,18 +467,7 @@ async def on_message(message):
 
         guild = message.guild
 
-        nazwa_roli = message.author.display_name
-
-        for rola in message.author.roles:
-
-            if rola.name == nazwa_roli:
-
-                try:
-                    await message.author.remove_roles(
-                        rola
-                    )
-                except:
-                    pass
+        nazwa_roli = f"KOLOR-{message.author.id}"
 
         rola = discord.utils.get(
             guild.roles,
@@ -506,9 +491,39 @@ async def on_message(message):
                 )
             )
 
+        # usuń stare role kolorów
+
+        for r in message.author.roles:
+
+            if r.name.startswith("KOLOR-"):
+
+                try:
+                    await message.author.remove_roles(r)
+                except:
+                    pass
+
+        # dodaj rolę
+
         await message.author.add_roles(
             rola
         )
+
+        # przesuń rolę najwyżej jak się da
+
+        try:
+
+            bot_member = guild.me
+
+            await rola.edit(
+                position=bot_member.top_role.position - 1
+            )
+
+        except:
+
+            await message.channel.send(
+                "⚠ Nie mogę przesunąć roli wyżej.\n"
+                "Ustaw rolę bota wyżej w Discordzie."
+            )
 
         await message.channel.send(
             f"🎨 {message.author.mention} ustawił własny kolor."
