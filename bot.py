@@ -15,6 +15,7 @@ TOKEN = os.getenv("TOKEN")
 
 KANAL_SPOTIFY = 1501855557584162818
 KANAL_PM = 1503525539766337656
+KANAL_BUTELKA_DOM = 1503091932321022122
 
 ROLA_PM = "GRACZPM"
 
@@ -33,6 +34,10 @@ client = discord.Client(intents=intents)
 # =========================================
 
 last_messages = set()
+
+cooldown_ping = set()
+cooldown_utwor = set()
+cooldown_butelka = set()
 
 # =========================================
 # SYSTEM PM
@@ -95,17 +100,7 @@ SMIESZNE_TEKSTY = [
     "⚡ Serwer przeżył kolejne odpalenie gry.",
     "🎲 Dethe rzuca kostką przeznaczenia.",
     "🕷 Pająk w kodzie właśnie coś naprawił.",
-    "🍩 Opiekunowie znowu zapomnieli spać.",
-    "📡 Skanowanie mózgów graczy...",
-    "🧠 IQ serwera chwilowo spadło do 3.",
-    "🌪 System wykrył nadchodzący chaos.",
-    "🎭 Dethe udaje profesjonalnego bota.",
-    "🐸 Żaba od kodu daje wam jeszcze jedną szansę.",
-    "💜 Fioletowy system aktywowany.",
-    "🕯 Dethe przywołuje poprawne odpowiedzi.",
-    "🚨 Alarm: gracze zaczynają myśleć.",
-    "📦 Ładowanie losowych liter...",
-    "🧿 PM.SYSTEM patrzy."
+    "🍩 Opiekunowie znowu zapomnieli spać."
 ]
 
 # =========================================
@@ -147,13 +142,7 @@ utwory = [
     "https://open.spotify.com/track/6rLqjzGV5VMLDWEnuUqi8q",
     "https://open.spotify.com/track/5R8dQOPq8haW94K7mgERlO",
     "https://open.spotify.com/track/2qSkIjg1o9h3YT9RAgYN75",
-    "https://open.spotify.com/track/5N3hjp1WNayUPZrA8kJmJP",
-    "https://open.spotify.com/track/0pqnGHJpmpxLKifKRmU6WP",
-    "https://open.spotify.com/track/62yJjFtgkhUrXktIoSjgP2",
-    "https://open.spotify.com/track/3zksbXteOCeSusJ5Xltr3t",
-    "https://open.spotify.com/track/7wTA0NKIm6T7nP2kaymU2a",
-    "https://open.spotify.com/track/58ge6dfP91o9oXMzq3XkIS",
-    "https://open.spotify.com/track/2nLtzopw4rPReszdYBJU6h"
+    "https://open.spotify.com/track/5N3hjp1WNayUPZrA8kJmJP"
 ]
 
 last_song_day = None
@@ -261,13 +250,17 @@ async def start_pm_game(channel):
         if not dostepne:
             break
 
-        aktualna_kategoria = random.choice(dostepne)
+        aktualna_kategoria = random.choice(
+            dostepne
+        )
 
         wykorzystane_kategorie.append(
             aktualna_kategoria
         )
 
-        aktualna_litera = random.choice(LITERY)
+        aktualna_litera = random.choice(
+            LITERY
+        )
 
         runda_msg = await channel.send(
             f"╔════════════════╗\n"
@@ -315,13 +308,6 @@ async def start_pm_game(channel):
         await asyncio.sleep(3)
 
     pm_aktywne = False
-
-    await channel.send(
-        "🏁 Gra zakończona!\n"
-        "📊 Trwa liczenie punktów..."
-    )
-
-    await asyncio.sleep(3)
 
     ranking = sorted(
         punkty.items(),
@@ -379,8 +365,21 @@ async def on_message(message):
 
     if message.content.lower() == "!ping":
 
+        if message.author.id in cooldown_ping:
+            return
+
+        cooldown_ping.add(
+            message.author.id
+        )
+
         await message.channel.send(
             "🏓 Pong!"
+        )
+
+        await asyncio.sleep(2)
+
+        cooldown_ping.remove(
+            message.author.id
         )
 
         return
@@ -391,9 +390,21 @@ async def on_message(message):
 
     if message.content.lower() == "!butelka":
 
+        if message.author.id in cooldown_butelka:
+            return
+
+        cooldown_butelka.add(
+            message.author.id
+        )
+
         rola_butelka = discord.utils.get(
             message.guild.roles,
             name="BUTELKA"
+        )
+
+        rola_gosc = discord.utils.get(
+            message.guild.roles,
+            name="GOSC"
         )
 
         if not rola_butelka:
@@ -402,20 +413,52 @@ async def on_message(message):
                 "❌ Nie znaleziono roli BUTELKA."
             )
 
+            cooldown_butelka.remove(
+                message.author.id
+            )
+
             return
 
-        members = [
-            member for member in message.guild.members
-            if (
-                not member.bot
-                and rola_butelka in member.roles
-            )
-        ]
+        # =================================
+        # KANAŁ DOMOWNIKÓW
+        # =================================
+
+        if message.channel.id == KANAL_BUTELKA_DOM:
+
+            members = [
+                member for member in message.guild.members
+                if (
+                    not member.bot
+                    and rola_butelka in member.roles
+                    and (
+                        rola_gosc is None
+                        or rola_gosc not in member.roles
+                    )
+                )
+            ]
+
+        # =================================
+        # RESZTA KANAŁÓW
+        # =================================
+
+        else:
+
+            members = [
+                member for member in message.guild.members
+                if (
+                    not member.bot
+                    and rola_butelka in member.roles
+                )
+            ]
 
         if len(members) < 1:
 
             await message.channel.send(
-                "❌ Brak osób z rolą BUTELKA."
+                "❌ Brak osób do losowania."
+            )
+
+            cooldown_butelka.remove(
+                message.author.id
             )
 
             return
@@ -453,6 +496,12 @@ async def on_message(message):
             f"{typ}"
         )
 
+        await asyncio.sleep(3)
+
+        cooldown_butelka.remove(
+            message.author.id
+        )
+
         return
 
     # =====================================
@@ -464,13 +513,28 @@ async def on_message(message):
         "!utwor"
     ]:
 
+        if message.author.id in cooldown_utwor:
+            return
+
+        cooldown_utwor.add(
+            message.author.id
+        )
+
         embed = discord.Embed(
             title="🎵 Dethe poleca",
             description=random.choice(utwory),
             color=0x6a0dad
         )
 
-        await message.channel.send(embed=embed)
+        await message.channel.send(
+            embed=embed
+        )
+
+        await asyncio.sleep(2)
+
+        cooldown_utwor.remove(
+            message.author.id
+        )
 
         return
 
@@ -533,7 +597,9 @@ async def on_message(message):
         if message.author.id in odpowiedzi:
             return
 
-        wiadomosci_graczy.append(message)
+        wiadomosci_graczy.append(
+            message
+        )
 
         odp_norm = normalize(odpowiedz)
 
