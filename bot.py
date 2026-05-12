@@ -35,10 +35,6 @@ client = discord.Client(intents=intents)
 
 last_messages = set()
 
-cooldown_ping = set()
-cooldown_utwor = set()
-cooldown_butelka = set()
-
 # =========================================
 # SYSTEM PM
 # =========================================
@@ -81,6 +77,7 @@ KATEGORIE = {
 LITERY = list("ABCDEFGHIJKLMNOPRSTUWYZ")
 
 SMIESZNE_TEKSTY = [
+
     "🧠 Dethe szuka inteligentnych graczy...",
     "🍕 Ładowanie chaosu i pizzy...",
     "☠ System wykrył brak snu opiekunów.",
@@ -90,7 +87,27 @@ SMIESZNE_TEKSTY = [
     "🎮 Ładowanie chaosu...",
     "⚠ Opiekunowie nie odpowiadają za utratę IQ.",
     "🟣 Dethe otworzył księgę państw i miast.",
-    "👻 System sprawdza czy gracze żyją."
+    "👻 System sprawdza czy gracze żyją.",
+    "🍟 Dethe zgubił odpowiedzi i improwizuje.",
+    "🧃 Trwa karmienie chomika serwerowego.",
+    "🔮 Losowanie kategorii przez czarną magię.",
+    "🌌 PM.SYSTEM wszedł w tryb nocnego chaosu.",
+    "🛸 Obcy właśnie sprawdzają waszą ortografię.",
+    "📚 Dethe udaje że zna wszystkie odpowiedzi.",
+    "⚡ Serwer przeżył kolejne odpalenie gry.",
+    "🎲 Dethe rzuca kostką przeznaczenia.",
+    "🕷 Pająk w kodzie właśnie coś naprawił.",
+    "🍩 Opiekunowie znowu zapomnieli spać.",
+    "🐸 Żaba od kodu daje wam ostatnią szansę.",
+    "💜 Fioletowy system aktywowany.",
+    "🚨 Alarm: gracze zaczynają myśleć.",
+    "📦 Ładowanie losowych liter...",
+    "🧿 PM.SYSTEM patrzy.",
+    "🪦 Dethe zakopał poprzednią kategorię.",
+    "🍪 Serwer został opłacony ciastkami.",
+    "🫠 IQ serwera spadło poniżej normy.",
+    "📡 Skanowanie odpowiedzi...",
+    "🌪 Nadciąga chaos państw i miast."
 ]
 
 # =========================================
@@ -128,11 +145,7 @@ utwory = [
     "https://open.spotify.com/track/2NmsngXHeC1GQ9wWrzhOMf",
     "https://open.spotify.com/track/5yY9lUy8nbvjM1Uyo1Uqoc",
     "https://open.spotify.com/track/776AftMmFFAWUIEAb3lHhw",
-    "https://open.spotify.com/track/1OcSfkeCg9hRC2sFKB4IMJ",
-    "https://open.spotify.com/track/6rLqjzGV5VMLDWEnuUqi8q",
-    "https://open.spotify.com/track/5R8dQOPq8haW94K7mgERlO",
-    "https://open.spotify.com/track/2qSkIjg1o9h3YT9RAgYN75",
-    "https://open.spotify.com/track/5N3hjp1WNayUPZrA8kJmJP"
+    "https://open.spotify.com/track/1OcSfkeCg9hRC2sFKB4IMJ"
 ]
 
 last_song_day = None
@@ -177,11 +190,15 @@ async def codzienny_utwor():
 
             embed = discord.Embed(
                 title="🎵 Dzisiejszy utwór od Dethe",
-                description=random.choice(utwory),
+                description=random.choice(
+                    utwory
+                ),
                 color=0x6a0dad
             )
 
-            await kanal.send(embed=embed)
+            await kanal.send(
+                embed=embed
+            )
 
 # =========================================
 # PM GAME
@@ -224,6 +241,108 @@ async def start_pm_game(channel):
 
         await asyncio.sleep(1)
 
+    for runda in range(1, MAX_RUND + 1):
+
+        if not pm_aktywne:
+            return
+
+        odpowiedzi = {}
+        wiadomosci_graczy = []
+
+        dostepne = [
+            k for k in KATEGORIE.keys()
+            if k not in wykorzystane_kategorie
+        ]
+
+        if not dostepne:
+            break
+
+        aktualna_kategoria = random.choice(
+            dostepne
+        )
+
+        wykorzystane_kategorie.append(
+            aktualna_kategoria
+        )
+
+        aktualna_litera = random.choice(
+            LITERY
+        )
+
+        runda_msg = await channel.send(
+            f"╔════════════════╗\n"
+            f"      DETHE-PM\n"
+            f"╚════════════════╝\n\n"
+            f"{random.choice(SMIESZNE_TEKSTY)}\n\n"
+            f"🟣 RUNDA {runda}/{MAX_RUND}\n\n"
+            f"📂 Kategoria: {aktualna_kategoria}\n"
+            f"🔤 Litera: {aktualna_litera}\n\n"
+            f"⏳ 15 sekund"
+        )
+
+        for i in range(15, 0, -1):
+
+            if not pm_aktywne:
+                return
+
+            await runda_msg.edit(
+                content=
+                f"╔════════════════╗\n"
+                f"      DETHE-PM\n"
+                f"╚════════════════╝\n\n"
+                f"{random.choice(SMIESZNE_TEKSTY)}\n\n"
+                f"🟣 RUNDA {runda}/{MAX_RUND}\n\n"
+                f"📂 Kategoria: {aktualna_kategoria}\n"
+                f"🔤 Litera: {aktualna_litera}\n\n"
+                f"⏳ {i} sekund"
+            )
+
+            await asyncio.sleep(1)
+
+        for msg in wiadomosci_graczy:
+
+            try:
+                await msg.delete()
+            except:
+                pass
+
+        await channel.send(
+            "━━━━━━━━━━━━━━━━━━\n"
+            "⏳ CZAS MINĄŁ\n"
+            "━━━━━━━━━━━━━━━━━━"
+        )
+
+        await asyncio.sleep(3)
+
+    pm_aktywne = False
+
+    ranking = sorted(
+        punkty.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )
+
+    tekst = (
+        "╔════════════════╗\n"
+        "     PM.RESULTS\n"
+        "╚════════════════╝\n\n"
+    )
+
+    if not ranking:
+
+        tekst += "Nikt nie zdobył punktów."
+
+    else:
+
+        for i, (gracz, pkt) in enumerate(
+            ranking,
+            start=1
+        ):
+
+            tekst += f"{i}. {gracz} — {pkt} pkt\n"
+
+    await channel.send(tekst)
+
 # =========================================
 # MESSAGE
 # =========================================
@@ -232,6 +351,9 @@ async def start_pm_game(channel):
 async def on_message(message):
 
     global pm_aktywne
+    global odpowiedzi
+    global punkty
+    global wiadomosci_graczy
 
     if message.author.bot:
         return
@@ -250,21 +372,8 @@ async def on_message(message):
 
     if message.content.lower() == "!ping":
 
-        if message.author.id in cooldown_ping:
-            return
-
-        cooldown_ping.add(
-            message.author.id
-        )
-
         await message.channel.send(
             "🏓 Pong!"
-        )
-
-        await asyncio.sleep(2)
-
-        cooldown_ping.remove(
-            message.author.id
         )
 
         return
@@ -278,27 +387,16 @@ async def on_message(message):
         "!utwor"
     ]:
 
-        if message.author.id in cooldown_utwor:
-            return
-
-        cooldown_utwor.add(
-            message.author.id
-        )
-
         embed = discord.Embed(
             title="🎵 Dethe poleca",
-            description=random.choice(utwory),
+            description=random.choice(
+                utwory
+            ),
             color=0x6a0dad
         )
 
         await message.channel.send(
             embed=embed
-        )
-
-        await asyncio.sleep(2)
-
-        cooldown_utwor.remove(
-            message.author.id
         )
 
         return
@@ -308,13 +406,6 @@ async def on_message(message):
     # =====================================
 
     if message.content.lower() == "!butelka":
-
-        if message.author.id in cooldown_butelka:
-            return
-
-        cooldown_butelka.add(
-            message.author.id
-        )
 
         rola_butelka = discord.utils.get(
             message.guild.roles,
@@ -329,16 +420,15 @@ async def on_message(message):
         if not rola_butelka:
 
             await message.channel.send(
-                "❌ Nie znaleziono roli BUTELKA."
-            )
-
-            cooldown_butelka.remove(
-                message.author.id
+                "❌ Brak roli BUTELKA."
             )
 
             return
 
-        if message.channel.id == KANAL_BUTELKA_DOM:
+        if (
+            message.channel.id
+            == KANAL_BUTELKA_DOM
+        ):
 
             members = [
                 member for member in message.guild.members
@@ -368,10 +458,6 @@ async def on_message(message):
                 "❌ Brak osób do losowania."
             )
 
-            cooldown_butelka.remove(
-                message.author.id
-            )
-
             return
 
         msg = await message.channel.send(
@@ -388,7 +474,9 @@ async def on_message(message):
                 f"⏳ {i}"
             )
 
-        osoba = random.choice(members)
+        osoba = random.choice(
+            members
+        )
 
         typ = random.choice([
             "🟣 PRAWDA",
@@ -407,19 +495,15 @@ async def on_message(message):
             f"{typ}"
         )
 
-        await asyncio.sleep(3)
-
-        cooldown_butelka.remove(
-            message.author.id
-        )
-
         return
 
     # =====================================
     # KOLOR HEX
     # =====================================
 
-    if message.content.lower().startswith("!kolor"):
+    if message.content.lower().startswith(
+        "!kolor"
+    ):
 
         args = message.content.split()
 
@@ -432,23 +516,7 @@ async def on_message(message):
 
             return
 
-        hex_kolor = args[1]
-
-        if not hex_kolor.startswith("#"):
-
-            await message.channel.send(
-                "❌ Podaj kolor HEX."
-            )
-
-            return
-
-        if len(hex_kolor) != 7:
-
-            await message.channel.send(
-                "❌ Zły format HEX."
-            )
-
-            return
+        hex_kolor = args[1].lower()
 
         try:
 
@@ -467,7 +535,9 @@ async def on_message(message):
 
         guild = message.guild
 
-        nazwa_roli = f"KOLOR-{message.author.id}"
+        nazwa_roli = (
+            message.author.display_name
+        )
 
         rola = discord.utils.get(
             guild.roles,
@@ -491,42 +561,24 @@ async def on_message(message):
                 )
             )
 
-        # usuń stare role kolorów
+        if rola not in message.author.roles:
 
-        for r in message.author.roles:
-
-            if r.name.startswith("KOLOR-"):
-
-                try:
-                    await message.author.remove_roles(r)
-                except:
-                    pass
-
-        # dodaj rolę
-
-        await message.author.add_roles(
-            rola
-        )
-
-        # przesuń rolę najwyżej jak się da
+            await message.author.add_roles(
+                rola
+            )
 
         try:
 
-            bot_member = guild.me
-
             await rola.edit(
-                position=bot_member.top_role.position - 1
+                position=
+                guild.me.top_role.position - 1
             )
 
         except:
-
-            await message.channel.send(
-                "⚠ Nie mogę przesunąć roli wyżej.\n"
-                "Ustaw rolę bota wyżej w Discordzie."
-            )
+            pass
 
         await message.channel.send(
-            f"🎨 {message.author.mention} ustawił własny kolor."
+            f"🎨 {message.author.mention} ustawił kolor {hex_kolor}"
         )
 
         return
@@ -564,5 +616,103 @@ async def on_message(message):
         )
 
         return
+
+    # =====================================
+    # ODPOWIEDZI PM
+    # =====================================
+
+    if pm_aktywne:
+
+        if message.channel.id != KANAL_PM:
+            return
+
+        rola = discord.utils.get(
+            message.guild.roles,
+            name=ROLA_PM
+        )
+
+        if rola not in message.author.roles:
+            return
+
+        odpowiedz = message.content.strip()
+
+        if not odpowiedz:
+            return
+
+        if message.author.id in odpowiedzi:
+            return
+
+        wiadomosci_graczy.append(
+            message
+        )
+
+        odp_norm = normalize(
+            odpowiedz
+        )
+
+        if not odp_norm.startswith(
+            normalize(
+                aktualna_litera
+            )
+        ):
+
+            await message.add_reaction(
+                "❌"
+            )
+
+            return
+
+        plik = KATEGORIE[
+            aktualna_kategoria
+        ]
+
+        poprawne = []
+
+        if os.path.exists(plik):
+
+            with open(
+                plik,
+                "r",
+                encoding="utf-8"
+            ) as f:
+
+                poprawne = [
+                    normalize(x.strip())
+                    for x in f.readlines()
+                ]
+
+        if odp_norm in poprawne:
+
+            odpowiedzi[
+                message.author.id
+            ] = odpowiedz
+
+            if len(odpowiedzi) == 1:
+                pkt = 15
+            else:
+                pkt = 10
+
+            nick = (
+                message.author.display_name
+            )
+
+            if nick not in punkty:
+                punkty[nick] = 0
+
+            punkty[nick] += pkt
+
+            await message.add_reaction(
+                "✅"
+            )
+
+        else:
+
+            await message.add_reaction(
+                "❌"
+            )
+
+# =========================================
+# START
+# =========================================
 
 client.run(TOKEN)
