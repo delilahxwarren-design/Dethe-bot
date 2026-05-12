@@ -13,8 +13,47 @@ TOKEN = os.getenv("TOKEN")
 # =========================================
 
 KANAL_SPOTIFY = 1501855557584162818
+KANAL_PM = 1503525539766337656
 
 ROLA_BUTELKA = "BUTELKA"
+ROLA_PM = "GRACZPM"
+
+# =========================================
+# PM SYSTEM
+# =========================================
+
+RUNDA_AKTYWNA = False
+AKTUALNA_KATEGORIA = None
+AKTUALNA_LITERA = None
+ODPOWIEDZI = {}
+PUNKTY = {}
+RUNDA_NUMER = 0
+MAX_RUND = 10
+
+KATEGORIE = {
+    "Jedzenie": "jedzenie.txt",
+    "Miasto": "miasta.txt",
+    "Państwo": "panstwa.txt",
+    "Zwierzę": "zwierzeta.txt",
+    "Film": "filmy.txt",
+    "Gra": "gry.txt",
+    "Kolor": "kolory.txt",
+    "Zawód": "zawody.txt",
+    "Roślina": "rosliny.txt",
+    "Serial": "seriale.txt",
+    "Sport": "sporty.txt",
+    "Instrument": "instrumenty.txt",
+    "Napój": "napoje.txt",
+    "Słodycz": "slodycze.txt",
+    "Fast food": "fastfood.txt",
+    "Owoc": "owoce.txt",
+    "Warzywo": "warzywa.txt",
+    "Kwiat": "kwiaty.txt",
+    "Mebel": "meble.txt"
+}
+
+LITERY = list("ABCDEFGHIJKLMNOPRSTUWYZ")
+WYKORZYSTANE_KATEGORIE = []
 
 # =========================================
 # DISCORD
@@ -94,6 +133,14 @@ async def codzienny_utwor():
 @client.event
 async def on_message(message):
 
+    global RUNDA_AKTYWNA
+    global RUNDA_NUMER
+    global AKTUALNA_KATEGORIA
+    global AKTUALNA_LITERA
+    global ODPOWIEDZI
+    global PUNKTY
+    global WYKORZYSTANE_KATEGORIE
+
     if message.author.bot:
         return
 
@@ -158,5 +205,211 @@ async def on_message(message):
         )
 
         return
+
+    # =====================================
+    # STOP PM
+    # =====================================
+
+    if message.content.lower() == "!stop":
+
+        if message.channel.id != KANAL_PM:
+            return
+
+        RUNDA_AKTYWNA = False
+
+        await message.channel.send(
+            "🛑 Gra została zatrzymana."
+        )
+
+        return
+
+    # =====================================
+    # START PM
+    # =====================================
+
+    if message.content.lower() == "!start":
+
+        if message.channel.id != KANAL_PM:
+            return
+
+        if RUNDA_AKTYWNA:
+
+            await message.channel.send(
+                "⚠ Gra już trwa."
+            )
+
+            return
+
+        RUNDA_AKTYWNA = True
+        RUNDA_NUMER = 0
+        PUNKTY = {}
+        WYKORZYSTANE_KATEGORIE = []
+
+        start_msg = await message.channel.send(
+            "🟣 PM.SYSTEM ONLINE\n\n"
+            "Rozgrywka rozpocznie się za 10 sekund..."
+        )
+
+        for i in range(10, 0, -1):
+
+            if not RUNDA_AKTYWNA:
+                return
+
+            await start_msg.edit(
+                content=
+                f"🟣 PM.SYSTEM ONLINE\n\n"
+                f"Start za: {i}"
+            )
+
+            await asyncio.sleep(1)
+
+        for _ in range(MAX_RUND):
+
+            if not RUNDA_AKTYWNA:
+                return
+
+            RUNDA_NUMER += 1
+            ODPOWIEDZI = {}
+
+            dostepne = [
+                k for k in KATEGORIE.keys()
+                if k not in WYKORZYSTANE_KATEGORIE
+            ]
+
+            if not dostepne:
+                break
+
+            AKTUALNA_KATEGORIA = random.choice(dostepne)
+            WYKORZYSTANE_KATEGORIE.append(AKTUALNA_KATEGORIA)
+
+            AKTUALNA_LITERA = random.choice(LITERY)
+
+            runda_msg = await message.channel.send(
+                f"╔════════════════╗\n"
+                f"      DETHE-PM\n"
+                f"╚════════════════╝\n\n"
+                f"🟣 RUNDA {RUNDA_NUMER}/{MAX_RUND}\n\n"
+                f"📂 Kategoria: {AKTUALNA_KATEGORIA}\n"
+                f"🔤 Litera: {AKTUALNA_LITERA}\n\n"
+                f"⏳ 15 sekund"
+            )
+
+            for i in range(15, 0, -1):
+
+                if not RUNDA_AKTYWNA:
+                    return
+
+                await runda_msg.edit(
+                    content=
+                    f"╔════════════════╗\n"
+                    f"      DETHE-PM\n"
+                    f"╚════════════════╝\n\n"
+                    f"🟣 RUNDA {RUNDA_NUMER}/{MAX_RUND}\n\n"
+                    f"📂 Kategoria: {AKTUALNA_KATEGORIA}\n"
+                    f"🔤 Litera: {AKTUALNA_LITERA}\n\n"
+                    f"⏳ {i} sekund"
+                )
+
+                await asyncio.sleep(1)
+
+            await message.channel.send(
+                "⚠ Koniec rundy."
+            )
+
+            await asyncio.sleep(2)
+
+        RUNDA_AKTYWNA = False
+
+        ranking = sorted(
+            PUNKTY.items(),
+            key=lambda x: x[1],
+            reverse=True
+        )
+
+        tekst = (
+            "╔════════════════╗\n"
+            "     PM.RESULTS\n"
+            "╚════════════════╝\n\n"
+        )
+
+        for i, (gracz, pkt) in enumerate(ranking, start=1):
+            tekst += f"{i}. {gracz} — {pkt} pkt\n"
+
+        await message.channel.send(tekst)
+
+        return
+
+    # =====================================
+    # ODPOWIEDZI PM
+    # =====================================
+
+    if RUNDA_AKTYWNA:
+
+        if message.channel.id != KANAL_PM:
+            return
+
+        rola = discord.utils.get(
+            message.guild.roles,
+            name=ROLA_PM
+        )
+
+        if rola not in message.author.roles:
+            return
+
+        if not message.content.startswith("!"):
+            return
+
+        odpowiedz = message.content[1:].strip()
+
+        if not odpowiedz:
+            return
+
+        if message.author.id in ODPOWIEDZI:
+            return
+
+        if not odpowiedz.lower().startswith(
+            AKTUALNA_LITERA.lower()
+        ):
+            await message.add_reaction("❌")
+            return
+
+        plik = KATEGORIE[AKTUALNA_KATEGORIA]
+
+        poprawne = []
+
+        if os.path.exists(plik):
+
+            with open(
+                plik,
+                "r",
+                encoding="utf-8"
+            ) as f:
+
+                poprawne = [
+                    x.strip().lower()
+                    for x in f.readlines()
+                ]
+
+        if odpowiedz.lower() in poprawne:
+
+            ODPOWIEDZI[message.author.id] = odpowiedz
+
+            if len(ODPOWIEDZI) == 1:
+                pkt = 15
+            else:
+                pkt = 10
+
+            nick = message.author.display_name
+
+            if nick not in PUNKTY:
+                PUNKTY[nick] = 0
+
+            PUNKTY[nick] += pkt
+
+            await message.add_reaction("✅")
+
+        else:
+
+            await message.add_reaction("❌")
 
 client.run(TOKEN)
