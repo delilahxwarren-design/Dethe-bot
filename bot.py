@@ -22,7 +22,10 @@ ROLA_PM = "GRACZPM"
 # DISCORD
 # =========================================
 
-intents = discord.Intents.all()
+intents = discord.Intents.default()
+intents.message_content = True
+intents.members = True
+
 client = discord.Client(intents=intents)
 
 # =========================================
@@ -131,34 +134,54 @@ def normalize(text):
 
 utwory = [
 
-    # Imagine Dragons
-    "https://open.spotify.com/track/0pqnGHJpmpxLKifKRmU6WP",
+    # The Weeknd
+    "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b",
     "https://open.spotify.com/track/7MXVkk9YMctZqd1Srtv4MB",
 
     # Arctic Monkeys
     "https://open.spotify.com/track/5XeFesFbtLpXzIVDNQP22n",
+    "https://open.spotify.com/track/0NdTUS4UiNYCNn5FgVqKQY",
 
     # Billie Eilish
     "https://open.spotify.com/track/2Fxmhks0bxGSBdJ92vM42m",
-
-    # The Weeknd
-    "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b",
+    "https://open.spotify.com/track/3PfIrDoz19wz7qK7tYeu62",
 
     # Chase Atlantic
     "https://open.spotify.com/track/2NmsngXHeC1GQ9wWrzhOMf",
+    "https://open.spotify.com/track/5yY9lUy8nbvjM1Uyo1Uqoc",
 
     # Måneskin
     "https://open.spotify.com/track/776AftMmFFAWUIEAb3lHhw",
+    "https://open.spotify.com/track/1OcSfkeCg9hRC2sFKB4IMJ",
 
     # Lady Gaga
     "https://open.spotify.com/track/6rLqjzGV5VMLDWEnuUqi8q",
+    "https://open.spotify.com/track/5R8dQOPq8haW94K7mgERlO",
 
     # Sabrina Carpenter
     "https://open.spotify.com/track/2qSkIjg1o9h3YT9RAgYN75",
+    "https://open.spotify.com/track/5N3hjp1WNayUPZrA8kJmJP",
+
+    # Imagine Dragons
+    "https://open.spotify.com/track/0pqnGHJpmpxLKifKRmU6WP",
+    "https://open.spotify.com/track/62yJjFtgkhUrXktIoSjgP2",
+
+    # Melanie Martinez
+    "https://open.spotify.com/track/3zksbXteOCeSusJ5Xltr3t",
+    "https://open.spotify.com/track/7wTA0NKIm6T7nP2kaymU2a",
 
     # Rock
-    "https://open.spotify.com/track/58ge6dfP91o9oXMzq3XkIS"
-]
+    "https://open.spotify.com/track/58ge6dfP91o9oXMzq3XkIS",
+    "https://open.spotify.com/track/2nLtzopw4rPReszdYBJU6h",
+
+    # Extra
+    "https://open.spotify.com/track/4iV5W9uYEdYUVa79Axb7Rh",
+    "https://open.spotify.com/track/1BxfuPKGuaTgP7aM0Bbdwr",
+    "https://open.spotify.com/track/4RvWPyQ5RL0ao9LPZeSouE",
+    "https://open.spotify.com/track/6habFhsOp2NvshLv26DqMb",
+    "https://open.spotify.com/track/3DarAbFujv6eYNliUTyqtz"
+
+    ]
 
 last_song_day = None
 
@@ -200,10 +223,13 @@ async def codzienny_utwor():
 
         if kanal:
 
-            await kanal.send(
-                f"🎵 Dzisiejszy utwór od Dethe:\n"
-                f"{random.choice(utwory)}"
+            embed = discord.Embed(
+                title="🎵 Dzisiejszy utwór od Dethe",
+                description=random.choice(utwory),
+                color=0x6a0dad
             )
+
+            await kanal.send(embed=embed)
 
 # =========================================
 # PM GAME
@@ -387,6 +413,39 @@ async def on_message(message):
         return
 
     # =====================================
+    # BUTELKA
+    # =====================================
+
+    if message.content.lower() == "!butelka":
+
+        members = [
+            member for member in message.guild.members
+            if not member.bot
+        ]
+
+        if len(members) < 2:
+
+            await message.channel.send(
+                "❌ Za mało osób."
+            )
+
+            return
+
+        osoba1 = random.choice(members)
+        osoba2 = random.choice(members)
+
+        while osoba2 == osoba1:
+            osoba2 = random.choice(members)
+
+        await message.channel.send(
+            f"🍾 Butelka wskazuje:\n\n"
+            f"👉 {osoba1.mention}\n"
+            f"❤️ {osoba2.mention}"
+        )
+
+        return
+
+    # =====================================
     # UTWÓR
     # =====================================
 
@@ -395,10 +454,13 @@ async def on_message(message):
         "!utwor"
     ]:
 
-        await message.channel.send(
-            f"🎵 Dethe poleca:\n"
-            f"{random.choice(utwory)}"
+        embed = discord.Embed(
+            title="🎵 Dethe poleca",
+            description=random.choice(utwory),
+            color=0x6a0dad
         )
+
+        await message.channel.send(embed=embed)
 
         return
 
