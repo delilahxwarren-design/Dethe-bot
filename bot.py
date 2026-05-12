@@ -229,8 +229,15 @@ async def on_message(message):
 
     if message.content.lower() == "!start":
 
+        if RUNDA_AKTYWNA:
+            return
+
         if message.channel.id != KANAL_PM:
             return
+
+        await message.channel.purge(limit=5)
+
+        print("START DETHE-PM")
 
         if RUNDA_AKTYWNA:
 
