@@ -3,11 +3,86 @@ Burger
 Burrito
 
 Cheeseburger
-Chickenburger
-Chicken nuggets
+Cebulki panierowane
+Chrupiący kurczak
 Chipsy
+Cola
+Ciastko
+Cupcake
+Churros
+Chickenburger
+Cheese fries
+Chili cheese nuggets
+Czosnkowy sos
+Czekoladowy shake
+Ciasteczka z czekoladą
+Cytrynowa lemoniada
+Cheddar burger
+Chrupiące frytki
+Chicken wrap
+Curry box
+Cebulowy burger
+Chrupki kukurydziane
+Cappuccino mrożone
+Czekoladowe brownie
+Cheese bites
+Chili burger
 
-Doner
+Double cheeseburger
+Drwal burger
+Donut
+Dipy serowe
+Duże frytki
+Deser lodowy
+Dakos
+Drobiowy burger
+Double burger
+Doner kebab
+Dania dnia
+Domowe stripsy
+Dip czosnkowy
+Dip barbecue
+Dip serowy
+Drożdżówka
+Duży kubełek
+Dorsz panierowany
+Deser czekoladowy
+Dżemowy donut
+Daktylowy shake
+Double chickenburger
+Dyniowe frytki
+Duża cola
+Deser karmelowy
+Duży kebab
+Duży burger
+Duży shake
+Duży wrap
+Duża pizza
+Duży zestaw
+Duże nuggetsy
+Duży hot dog
+Duże lody
+Duża tortilla
+Double wrap
+Double strips
+Double nuggets
+Deluxe burger
+Deluxe frytki
+Deser truskawkowy
+Deser waniliowy
+Drobiowe nuggetsy
+Drobiowy wrap
+Drobiowe stripsy
+Doner box
+Doner rollo
+Doner tortilla
+Dip miodowo-musztardowy
+Dip ostry
+Dip koperkowy
+Donut czekoladowy
+Donut karmelowy
+Donut truskawkowy
+Donut z posypką
 
 Falafel
 Fishburger
