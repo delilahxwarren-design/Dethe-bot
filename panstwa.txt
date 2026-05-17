@@ -12,28 +12,30 @@ Bahamy
 Bahrajn
 Bangladesz
 Barbados
-Belgia
+Belgia 
 Belize
 Benin
+Bhutan
 Białoruś
 Boliwia
 Bośnia i Hercegowina
 Botswana
-Brazylia
+Brazylia 
 Brunei
-Bułgaria
+Bułgaria 
 Burkina Faso
 Burundi
 
 Chile
 Chiny
-Chorwacja
-Cypr
+Chorwacja 
+Cypr 
 Czad
 Czarnogóra
 Czechy
 
-Dania
+Dania 
+Demokratyczna Republika Konga
 Dominika
 Dominikana
 Dżibuti
@@ -53,12 +55,14 @@ Francja
 Gabon
 Gambia
 Ghana
-Grecja
+Grecja 
 Grenada
 Gruzja
 Gujana
 Gwatemala
 Gwinea
+Gwinea Bissau
+Gwinea Równikowa
 
 Haiti
 Hiszpania
@@ -70,12 +74,12 @@ Indonezja
 Irak
 Iran
 Irlandia
-Islandia
+Islandia 
 Izrael
-Włochy
 
-Jemen
+Jamajka
 Japonia
+Jemen
 Jordania
 
 Kambodża
@@ -83,7 +87,7 @@ Kamerun
 Kanada
 Katar
 Kazachstan
-Kenia
+Kenia 
 Kirgistan
 Kiribati
 Kolumbia
@@ -105,6 +109,7 @@ Litwa
 Luksemburg
 Łotwa
 
+Macedonia
 Madagaskar
 Malawi
 Malediwy
@@ -114,8 +119,9 @@ Malta
 Maroko
 Mauretania
 Mauritius
-Meksyk
+Meksyk 
 Mikronezja
+Mjanma
 Mołdawia
 Monako
 Mongolia
@@ -124,11 +130,11 @@ Mozambik
 Namibia
 Nauru
 Nepal
-Niemcy
+Niemcy 
 Niger
 Nigeria
 Nikaragua
-Norwegia
+Norwegia 
 Nowa Zelandia
 
 Oman
