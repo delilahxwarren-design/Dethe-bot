@@ -134,19 +134,21 @@ def normalize(text):
 # SPOTIFY
 # =========================================
 
-utwory = [
+utwory = []
 
-    "https://open.spotify.com/track/0VjIjW4GlUZAMYd2vXMi3b",
-    "https://open.spotify.com/track/7MXVkk9YMctZqd1Srtv4MB",
-    "https://open.spotify.com/track/5XeFesFbtLpXzIVDNQP22n",
-    "https://open.spotify.com/track/0NdTUS4UiNYCNn5FgVqKQY",
-    "https://open.spotify.com/track/2Fxmhks0bxGSBdJ92vM42m",
-    "https://open.spotify.com/track/3PfIrDoz19wz7qK7tYeu62",
-    "https://open.spotify.com/track/2NmsngXHeC1GQ9wWrzhOMf",
-    "https://open.spotify.com/track/5yY9lUy8nbvjM1Uyo1Uqoc",
-    "https://open.spotify.com/track/776AftMmFFAWUIEAb3lHhw",
-    "https://open.spotify.com/track/1OcSfkeCg9hRC2sFKB4IMJ"
-]
+if os.path.exists("spotify.txt"):
+
+    with open(
+        "spotify.txt",
+        "r",
+        encoding="utf-8"
+    ) as f:
+
+        utwory = [
+            line.strip()
+            for line in f
+            if line.strip()
+        ]
 
 last_song_day = None
 
