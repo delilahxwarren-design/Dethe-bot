@@ -1,6 +1,20 @@
-Bagietka z kebabem
-Burger
-Burrito
+Burger drwala
+Burger chicken
+BBQ burger
+Bekon frytki
+Baton lodowy
+Burgery z serem
+Buła z pulled pork
+Burrito z kurczakiem
+Bites serowe
+Brownie
+Bubble tea
+Banan w cieście
+Bowl kebab
+Boczek crispy
+Burger rybny
+Burgery pikantne
+Burrito wołowe
 
 Cheeseburger
 Cebulki panierowane
@@ -84,12 +98,57 @@ Donut karmelowy
 Donut truskawkowy
 Donut z posypką
 
-Falafel
-Fishburger
 Frytki
+Frytki belgijskie
+Frytki z serem
+Frytki bekonowe
+Frytki deluxe
+Fishburger
+Fish and chips
+Falafel
+Foccacia
+Fried chicken
+Frytki curly
+Frytki karbowane
+Frytki z jalapeno
+Frytki truflowe
+Frytki z dipem
+Fanta
+Frappé
+Frytki z kurczakiem
+Filet panierowany
+Frytki z pulled pork
+Frytki z sosem serowym
+Frytki pikantne
+Frytki farmerskie
+Frytki z cebulką
+Frytki z chilli
+Frytki z boczkiem
+Frytki z ketchupem
+Frytki z majonezem
+Frytki z nuggetsami
+Frytki z cheddar
 
 Hamburger
 Hot dog
+Hot wings
+Honey mustard dip
+Hot chicken burger
+Hot fries
+Hot tortilla
+Hot sandwich
+Hot nuggets
+Hot wrap
+Halloumi burger
+Hash browns
+Hawajska pizza
+Hot kebab
+Hot strips
+Hot box
+Hot cheese fries
+Herbaciany shake
+Hot burger deluxe
+Hot roll
 
 Kebab
 Kebab box
