@@ -1,3 +1,24 @@
+American burger
+Arabski kebab
+Avocado burger
+Alfredo pizza
+Ananasowa pizza
+Ayran
+Arabska tortilla
+Amerykańskie frytki
+Amerykańskie naleśniki
+Amerykański hot dog
+Amerykański shake
+Ananasowy shake
+Arbuzowa lemoniada
+Aromatyczne stripsy
+Apetizer box
+Azjatycki wrap
+Azjatycki burger
+Azjatyckie nuggetsy
+Ananasowy deser
+Amerykański burger
+
 Burger drwala
 Burger chicken
 BBQ burger
@@ -129,6 +150,27 @@ Frytki z majonezem
 Frytki z nuggetsami
 Frytki z cheddar
 
+Gyros
+Grillburger
+Grillowany kurczak
+Gofr
+Gofr z bitą śmietaną
+Gofr czekoladowy
+Gofr owocowy
+Garlic bread
+Grube frytki
+Grillowany burger
+Grillowana tortilla
+Grillowana kanapka
+Grillowane stripsy
+Grillowana kukurydza
+Grecki wrap
+Grillowana kiełbaska
+Grillowany kebab
+Gorąca czekolada
+Gulasz burger
+Grill box
+
 Hamburger
 Hot dog
 Hot wings
@@ -150,27 +192,255 @@ Herbaciany shake
 Hot burger deluxe
 Hot roll
 
-Kebab
-Kebab box
-Krążki cebulowe
-Kurczak panierowany
+Ice cream
+Italian burger
+Italian wrap
+Indyk burger
+Indyjskie curry
+Ice coffee
+Iced latte
+Iced mocha
+Imbirowa lemoniada
+Imbirowy shake
+Italian pizza
+Italian sandwich
+Italian fries
+Indyjski wrap
+Indycze stripsy
+Indycze nuggetsy
+Izraelski falafel
+Italian hot dog
+Italian kebab
+Ice shake
 
+Kebab
+Kurczak panierowany
+Krążki cebulowe
+Kurczak crispy
+Kanapka chicken
+Kubełek stripsów
+Kubełek nuggetsów
+Kebab box
+Kebab rollo
+Kebab tortilla
+Kebab na talerzu
+Kurczak z frytkami
+Kurczak hot spicy
+Kawa mrożona
+Karmelowy shake
+Ketchup
+Kurczak grillowany
+Kanapka z bekonem
+Kurczak burger
+Kukurydza grillowana
+Koktajl truskawkowy
+Koktajl waniliowy
+Koktajl czekoladowy
+Kurczak box
+Kebab mieszany
+
+Lody
+Lemoniada
+Longer
+Lasagne
+Loaded fries
+Lody waniliowe
+Lody czekoladowe
+Lody truskawkowe
+Lody karmelowe
+Lody z polewą
+Lava cake
+Lukrowany donut
+Lunch box
+Lody włoskie
+Lemoniada cytrynowa
+Lemoniada truskawkowa
+Lemoniada mango
+Lemoniada arbuzowa
+Lemoniada miętowa
+Long burger
+
+Nuggetsy
 Nachosy
+Nuggetsy z kurczaka
+Nuggetsy pikantne
+Nuggetsy serowe
+Nuggetsy z dipem
+Naleśnik z nutellą
+Naleśnik z kurczakiem
+Naleśnik kebab
+Naleśniki amerykańskie
+Napój gazowany
+Napój energetyczny
+Napój cytrynowy
+Nuggetsy barbecue
+Nuggetsy hot spicy
+Nuggetsy z serem
+Nuggetsy premium
+Nuggetsy XXL
+Nuggetsy crispy
+Nutella shake
 
 Onion rings
+Ostry kebab
+Ostry burger
+Ostre nuggetsy
+Ostre stripsy
+Ostry wrap
+Ostra tortilla
+Ostry sos czosnkowy
+Ostry sos barbecue
+Ostry kurczak
+Oponki
+Orzechowy shake
+Orzechowe brownie
+Owsiany koktajl
+Owoce w czekoladzie
+Oliwkowa pizza
+Ostre frytki
+Oliwkowy burger
+Owocowy shake
+Ostry box
 
-Panini
 Pizza
-
-Quesadilla
+Pizza pepperoni
+Pizza hawajska
+Pizza serowa
+Pizza barbecue
+Pizza farmerska
+Pizza kebab
+Pizza z kurczakiem
+Panini
+Pita
+Pita kebab
+Paluszki serowe
+Pieczone frytki
+Pikantny burger
+Pikantne nuggetsy
+Pikantne stripsy
+Pączek
+Pączek z czekoladą
+Pączek z marmoladą
+Pudding
+Popcorn chicken
+Pepsi
+Pulled pork burger
+Pikantny kebab
+Pikantny wrap
 
 Rollo
+Rollo kebab
+Roller
+Ramen
+Ranch burger
+Ranch frytki
+Ranch wrap
+Ranch strips
+Ranch nuggets
+Rollo z kurczakiem
+Rollo mieszane
+Rollo wołowe
+Rybny burger
+Rybne nuggetsy
+Rogalik
+Rogal z czekoladą
+Rogal maślany
+Red velvet donut
+Raspberry shake
+Ryż z kurczakiem
+Ryżowy box
 
+Stripsy
+Shake
+Sandwich
 Subway sandwich
+Serowe frytki
+Serowe nuggetsy
+Spicy burger
+Spicy wrap
+Spicy kebab
+Spicy strips
+Sałatka chicken
+Sałatka cezar
+Sos czosnkowy
+Sos barbecue
+Sos serowy
+Sos ostry
+Sos ranch
+Skrzydełka
+Skrzydełka hot
+Serowy burger
+Shake truskawkowy
+Shake waniliowy
+Shake czekoladowy
+Smażony kurczak
+Smażony ser
 
 Taco
 Tortilla
+Tortilla kebab
+Tortilla z kurczakiem
+Taco
+Taco burger
+Tendersy
+Tost
+Tost serowy
+Tost z szynką
+Twister
+Twister box
+Tiramisu
+Truskawkowy shake
+Truflowe frytki
+Triple burger
+Triple cheeseburger
+Texas burger
+Texas fries
+Tosty z serem
+Tosty z kurczakiem
+Talerz kebab
+Tzatziki
+Tropikalny shake
+Tortilla spicy
+Tortilla cheese
 
 Wrap
+Wieśmac
+Wings
+Wrap z kurczakiem
+Wrap kebab
+Wrap spicy
+Wrap serowy
+Wrap barbecue
+Wrap ranch
+Waffle burger
+Wafle z czekoladą
+Wafle z bitą śmietaną
+Waniliowy shake
+Wegański burger
+Wegański wrap
+Wiejski burger
+Wołowy burger
+Woda gazowana
+Woda smakowa
+Wielki kubełek
 
 Zapiekanka
+Zinger burger
+Zestaw nuggets
+Zestaw burger
+Zestaw kebab
+Zestaw strips
+Zestaw frytki i cola
+Zawijaniec z kurczakiem
+Zawijaniec kebab
+Zapiekanka z serem
+Zapiekanka z pieczarkami
+Zapiekanka kebab
+Ziemniaczki wedges
+Złote frytki
+Ziołowy dip
+Zimowa herbata
+Zielony shake
+Zestaw XXL
+Zakręcone frytki
+Ziemniaki pieczone
