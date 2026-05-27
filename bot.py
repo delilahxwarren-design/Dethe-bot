@@ -16,6 +16,9 @@ TOKEN = os.getenv("TOKEN")
 KANAL_SPOTIFY = 1501855557584162818
 KANAL_PM = 1503525539766337656
 KANAL_BUTELKA_DOM = 1503091932321022122
+KANAL_URODZINY = 1501653840460779621
+
+ROLA_URODZINY = "Solenizant"
 
 ROLA_PM = "GRACZPM"
 
@@ -34,6 +37,30 @@ client = discord.Client(intents=intents)
 # =========================================
 
 last_messages = set()
+
+# =========================================
+# URODZINY
+# =========================================
+
+urodziny = {}
+
+if os.path.exists("urodziny.txt"):
+
+    with open(
+        "urodziny.txt",
+        "r",
+        encoding="utf-8"
+    ) as f:
+
+        for line in f:
+
+            line = line.strip()
+
+            if "|" in line:
+
+                user_id, data = line.split("|")
+
+                urodziny[user_id] = data
 
 # =========================================
 # SYSTEM PM
@@ -164,6 +191,9 @@ async def on_ready():
     if not codzienny_utwor.is_running():
         codzienny_utwor.start()
 
+    if not birthday_system.is_running():
+        birthday_system.start()
+
 # =========================================
 # CODZIENNY UTWÓR
 # =========================================
@@ -201,6 +231,80 @@ async def codzienny_utwor():
             await kanal.send(
                 embed=embed
             )
+
+# =========================================
+# SYSTEM URODZIN
+# =========================================
+
+@tasks.loop(minutes=1)
+async def birthday_system():
+
+    teraz = datetime.now()
+
+    dzisiaj = teraz.strftime("%d.%m")
+
+    if teraz.minute == 0:
+
+        for guild in client.guilds:
+
+            rola = discord.utils.get(
+                guild.roles,
+                name=ROLA_URODZINY
+            )
+
+            if not rola:
+                continue
+
+            kanal = client.get_channel(
+                KANAL_URODZINY
+            )
+
+            for member in guild.members:
+
+                if rola in member.roles:
+
+                    try:
+                        await member.remove_roles(
+                            rola
+                        )
+                    except:
+                        pass
+
+            solenizanci = []
+
+            for user_id, data in urodziny.items():
+
+                if data == dzisiaj:
+
+                    member = guild.get_member(
+                        int(user_id)
+                    )
+
+                    if member:
+
+                        solenizanci.append(
+                            member
+                        )
+
+                        try:
+
+                            await member.add_roles(
+                                rola
+                            )
+
+                        except:
+                            pass
+
+            if solenizanci and kanal:
+
+                tekst = "\n".join(
+                    x.mention
+                    for x in solenizanci
+                )
+
+                await kanal.send(
+                    f"🎂 Urodziny mają:\n\n{tekst}\n\n🎉 Wszystkiego najlepszego!"
+                )
 
 # =========================================
 # PM GAME
@@ -615,6 +719,138 @@ async def on_message(message):
 
         await message.channel.send(
             "🛑 Dethe zatrzymał grę."
+        )
+
+        return
+
+    # =====================================
+    # URODZINY
+    # =====================================
+
+    if message.content.lower().startswith(
+        "!urodziny"
+    ):
+
+        args = message.content.split()
+
+        if len(args) != 2:
+
+            await message.channel.send(
+                "🎂 !urodziny DD.MM"
+            )
+
+            return
+
+        data = args[1]
+
+        urodziny[
+            str(message.author.id)
+        ] = data
+
+        with open(
+            "urodziny.txt",
+            "w",
+            encoding="utf-8"
+        ) as f:
+
+            for uid, d in urodziny.items():
+
+                f.write(
+                    f"{uid}|{d}\n"
+                )
+
+        await message.channel.send(
+            f"🎂 Zapisano urodziny: {data}"
+        )
+
+        return
+
+    if message.content.lower() == "!mojeurodziny":
+
+        user_id = str(
+            message.author.id
+        )
+
+        if user_id not in urodziny:
+
+            await message.channel.send(
+                "❌ Nie masz ustawionych urodzin."
+            )
+
+            return
+
+        await message.channel.send(
+            f"🎂 Twoje urodziny: {urodziny[user_id]}"
+        )
+
+        return
+
+    if message.content.lower() == "!usunurodziny":
+
+        user_id = str(
+            message.author.id
+        )
+
+        if user_id not in urodziny:
+
+            await message.channel.send(
+                "❌ Nie masz zapisanych urodzin."
+            )
+
+            return
+
+        del urodziny[user_id]
+
+        with open(
+            "urodziny.txt",
+            "w",
+            encoding="utf-8"
+        ) as f:
+
+            for uid, d in urodziny.items():
+
+                f.write(
+                    f"{uid}|{d}\n"
+                )
+
+        await message.channel.send(
+            "🗑 Usunięto twoje urodziny."
+        )
+
+        return
+
+    if message.content.lower() == "!listaurodzin":
+
+        if not urodziny:
+
+            await message.channel.send(
+                "❌ Lista urodzin jest pusta."
+            )
+
+            return
+
+        tekst = "🎂 LISTA URODZIN\n\n"
+
+        for user_id, data in sorted(
+            urodziny.items(),
+            key=lambda x: (
+                int(x[1].split(".")[1]),
+                int(x[1].split(".")[0])
+            )
+        ):
+
+            member = message.guild.get_member(
+                int(user_id)
+            )
+
+            if member:
+
+                tekst += (
+                    f"{member.display_name} — {data}\n"
+                )
+
+        await message.channel.send(
+            tekst
         )
 
         return
