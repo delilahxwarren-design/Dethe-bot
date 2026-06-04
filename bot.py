@@ -255,24 +255,16 @@ async def birthday_system():
 
     global last_birthday_check
 
-    teraz = datetime.now()
-    dzisiaj = teraz.strftime("%d.%m")
-
-    print(f"Birthday check: {dzisiaj}")
+    dzisiaj = datetime.now().strftime("%d.%m")
 
     if last_birthday_check == dzisiaj:
         return
 
+    wyslano = False
+
     for guild in client.guilds:
-        print(f"Serwer: {guild.name} | {guild.id}")
 
-        rola = discord.utils.get(
-            guild.roles,
-            name=ROLA_URODZINY
-        )
-
-        if not rola:
-            print("Nie znaleziono roli urodzinowej.")
+        if guild.id not in KANALY:
             continue
 
         kanal_id = KANALY[guild.id]["urodziny"]
@@ -280,18 +272,20 @@ async def birthday_system():
         kanal = client.get_channel(
             kanal_id
         )
-        print(f"Kanał: {kanal}")
 
         if not kanal:
-            print("Nie znaleziono kanału urodzin.")
             continue
+
+        rola = discord.utils.get(
+            guild.roles,
+            name=ROLA_URODZINY
+        )
 
         solenizanci = []
 
         for user_id, data in urodziny.items():
 
             if data == dzisiaj:
-                print(f"Znaleziono urodziny: {user_id}")
 
                 member = guild.get_member(
                     int(user_id)
@@ -299,20 +293,23 @@ async def birthday_system():
 
                 if member:
 
-                    solenizanci.append(member)
+                    solenizanci.append(
+                        member
+                    )
 
-                    try:
+                    if (
+                        rola
+                        and rola not in member.roles
+                    ):
 
-                        if rola not in member.roles:
+                        try:
+
                             await member.add_roles(
                                 rola
                             )
 
-                    except Exception as e:
-
-                        print(
-                            f"Błąd nadawania roli: {e}"
-                        )
+                        except:
+                            pass
 
         if solenizanci:
 
@@ -325,6 +322,9 @@ async def birthday_system():
                 f"🎂 Dzisiaj urodziny mają:\n\n{tekst}\n\n🎉 Wszystkiego najlepszego!"
             )
 
+            wyslano = True
+
+    if wyslano:
         last_birthday_check = dzisiaj
 
                 
