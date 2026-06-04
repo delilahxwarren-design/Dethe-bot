@@ -281,7 +281,7 @@ kanal = client.get_channel(
 )
 
 
-        if not kanal:
+if not kanal:
             print("Nie znaleziono kanału urodzin.")
             continue
 
@@ -323,7 +323,7 @@ kanal = client.get_channel(
                 f"🎂 Dzisiaj urodziny mają:\n\n{tekst}\n\n🎉 Wszystkiego najlepszego!"
             )
 
-            last_birthday_check = dzisiaj
+last_birthday_check = dzisiaj
 
                 
 
