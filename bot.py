@@ -322,7 +322,7 @@ async def birthday_system():
                 f"🎂 Dzisiaj urodziny mają:\n\n{tekst}\n\n🎉 Wszystkiego najlepszego!"
             )
 
-last_birthday_check = dzisiaj
+        last_birthday_check = dzisiaj
 
                 
 
