@@ -234,7 +234,7 @@ async def codzienny_utwor():
 
 # =========================================
 
-                        last_birthday_check = None
+last_birthday_check = None
 
 @tasks.loop(minutes=1)
 async def birthday_system():
