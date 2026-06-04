@@ -276,12 +276,11 @@ async def birthday_system():
 
         kanal_id = KANALY[guild.id]["urodziny"]
 
-kanal = client.get_channel(
-    kanal_id
-)
+        kanal = client.get_channel(
+            kanal_id
+        )
 
-
-if not kanal:
+        if not kanal:
             print("Nie znaleziono kanału urodzin.")
             continue
 
