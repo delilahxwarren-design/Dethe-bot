@@ -263,9 +263,6 @@ async def birthday_system():
     if last_birthday_check == dzisiaj:
         return
 
-if last_birthday_check == dzisiaj:
-    return
-
     for guild in client.guilds:
 
         rola = discord.utils.get(
