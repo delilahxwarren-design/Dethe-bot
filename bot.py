@@ -6,9 +6,7 @@ import unicodedata
 
 from discord.ext import tasks
 from datetime import datetime
-
 TOKEN = os.getenv("TOKEN")
-
 # =========================================
 # KONFIG
 # =========================================
@@ -260,8 +258,13 @@ async def birthday_system():
     teraz = datetime.now()
     dzisiaj = teraz.strftime("%d.%m")
 
+    print(f"Birthday check: {dzisiaj}")
+
     if last_birthday_check == dzisiaj:
         return
+
+if last_birthday_check == dzisiaj:
+    return
 
     for guild in client.guilds:
 
