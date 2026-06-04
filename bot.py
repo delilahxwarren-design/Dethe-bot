@@ -18,7 +18,7 @@ KANAL_PM = 1503525539766337656
 KANAL_BUTELKA_DOM = 1503091932321022122
 KANAL_URODZINY = 1501653840460779621
 
-ROLA_URODZINY = "Solenizant"
+ROLA_URODZINY = "SOLENIZANT"
 
 ROLA_PM = "GRACZPM"
 
@@ -233,78 +233,80 @@ async def codzienny_utwor():
             )
 
 # =========================================
-# SYSTEM URODZIN
-# =========================================
+
+                        last_birthday_check = None
 
 @tasks.loop(minutes=1)
 async def birthday_system():
 
-    teraz = datetime.now()
+    global last_birthday_check
 
+    teraz = datetime.now()
     dzisiaj = teraz.strftime("%d.%m")
 
-    if teraz.minute == 0:
+    if last_birthday_check == dzisiaj:
+        return
 
-        for guild in client.guilds:
+    for guild in client.guilds:
 
-            rola = discord.utils.get(
-                guild.roles,
-                name=ROLA_URODZINY
-            )
+        rola = discord.utils.get(
+            guild.roles,
+            name=ROLA_URODZINY
+        )
 
-            if not rola:
-                continue
+        if not rola:
+            print("Nie znaleziono roli urodzinowej.")
+            continue
 
-            kanal = client.get_channel(
-                KANAL_URODZINY
-            )
+        kanal = client.get_channel(
+            KANAL_URODZINY
+        )
 
-            for member in guild.members:
+        if not kanal:
+            print("Nie znaleziono kanału urodzin.")
+            continue
 
-                if rola in member.roles:
+        solenizanci = []
+
+        for user_id, data in urodziny.items():
+
+            if data == dzisiaj:
+
+                member = guild.get_member(
+                    int(user_id)
+                )
+
+                if member:
+
+                    solenizanci.append(member)
 
                     try:
-                        await member.remove_roles(
-                            rola
-                        )
-                    except:
-                        pass
 
-            solenizanci = []
-
-            for user_id, data in urodziny.items():
-
-                if data == dzisiaj:
-
-                    member = guild.get_member(
-                        int(user_id)
-                    )
-
-                    if member:
-
-                        solenizanci.append(
-                            member
-                        )
-
-                        try:
-
+                        if rola not in member.roles:
                             await member.add_roles(
                                 rola
                             )
 
-                        except:
-                            pass
+                    except Exception as e:
 
-            if solenizanci and kanal:
+                        print(
+                            f"Błąd nadawania roli: {e}"
+                        )
 
-                tekst = "\n".join(
-                    x.mention
-                    for x in solenizanci
-                )
+        if solenizanci:
 
-                await kanal.send(
-                    f"🎂 Urodziny mają:\n\n{tekst}\n\n🎉 Wszystkiego najlepszego!"
-                )
+            tekst = "\n".join(
+                member.mention
+                for member in solenizanci
+            )
+
+            await kanal.send(
+                f"🎂 Dzisiaj urodziny mają:\n\n{tekst}\n\n🎉 Wszystkiego najlepszego!"
+            )
+
+            last_birthday_check = dzisiaj
+
+                
 
 # =========================================
 # PM GAME
