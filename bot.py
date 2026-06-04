@@ -12,7 +12,23 @@ TOKEN = os.getenv("TOKEN")
 # =========================================
 # KONFIG
 # =========================================
+KANALY = {
 
+    1501645587580457072: {
+        "spotify": 1501855557584162818,
+        "pm": 1503525539766337656,
+        "butelka": 1503091932321022122,
+        "urodziny": 1501653840460779621
+    },
+
+    1500480965905219645: {
+        "spotify": 1501855457827098685,
+        "pm": 1512136322528051271,
+        "butelka": 1512136182757330964,
+        "urodziny": 1501257984523763782
+    }
+
+}
 KANAL_SPOTIFY = 1501855557584162818
 KANAL_PM = 1503525539766337656
 KANAL_BUTELKA_DOM = 1503091932321022122
@@ -258,9 +274,12 @@ async def birthday_system():
             print("Nie znaleziono roli urodzinowej.")
             continue
 
-        kanal = client.get_channel(
-            KANAL_URODZINY
-        )
+        kanal_id = KANALY[guild.id]["urodziny"]
+
+kanal = client.get_channel(
+    kanal_id
+)
+
 
         if not kanal:
             print("Nie znaleziono kanału urodzin.")
