@@ -264,6 +264,7 @@ async def birthday_system():
         return
 
     for guild in client.guilds:
+        print(f"Serwer: {guild.name} | {guild.id}")
 
         rola = discord.utils.get(
             guild.roles,
@@ -279,6 +280,7 @@ async def birthday_system():
         kanal = client.get_channel(
             kanal_id
         )
+        print(f"Kanał: {kanal}")
 
         if not kanal:
             print("Nie znaleziono kanału urodzin.")
@@ -289,6 +291,7 @@ async def birthday_system():
         for user_id, data in urodziny.items():
 
             if data == dzisiaj:
+                print(f"Znaleziono urodziny: {user_id}")
 
                 member = guild.get_member(
                     int(user_id)
