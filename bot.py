@@ -595,7 +595,7 @@ msg = await message.channel.send(
             "🍾 Dethe kręci butelką..."
         )
 
-        for i in ["3", "2", "1"]:
+for i in ["3", "2", "1"]:
 
             await asyncio.sleep(1)
 
