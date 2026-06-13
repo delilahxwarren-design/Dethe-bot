@@ -554,10 +554,11 @@ async def on_message(message):
 
             return
 
-        if (
-            message.channel.id
-            == KANAL_BUTELKA_DOM
-        ):
+if (
+    message.guild.id in KANALY
+    and message.channel.id
+    == KANALY[message.guild.id]["butelka"]        
+    ):
 
             members = [
                 member for member in message.guild.members
