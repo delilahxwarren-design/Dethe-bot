@@ -554,7 +554,7 @@ async def on_message(message):
 
             return
 
-if (
+    if (
     message.guild.id in KANALY
     and message.channel.id
     == KANALY[message.guild.id]["butelka"]        
@@ -572,7 +572,7 @@ if (
                 )
             ]
 
-else:
+    else:
 
             members = [
                 member for member in message.guild.members
@@ -583,7 +583,7 @@ else:
             ]
 
     
-if len(members) < 1:
+    if len(members) < 1:
 
             await message.channel.send(
                 "❌ Brak osób do losowania."
@@ -591,11 +591,11 @@ if len(members) < 1:
 
             return
 
-msg = await message.channel.send(
+    msg = await message.channel.send(
             "🍾 Dethe kręci butelką..."
         )
 
-for i in ["3", "2", "1"]:
+    for i in ["3", "2", "1"]:
 
             await asyncio.sleep(1)
 
@@ -605,18 +605,18 @@ for i in ["3", "2", "1"]:
                 f"⏳ {i}"
             )
 
-osoba = random.choice(
+    osoba = random.choice(
             members
         )
 
-typ = random.choice([
+    typ = random.choice([
             "🟣 PRAWDA",
             "🔥 WYZWANIE"
         ])
 
-await asyncio.sleep(1)
+    await asyncio.sleep(1)
 
-await msg.edit(
+    await msg.edit(
             content=
             f"╔════════════════╗\n"
             f"      DETHE\n"
@@ -626,7 +626,7 @@ await msg.edit(
             f"{typ}"
         )
 
-return
+    return
 
     # =====================================
     # KOLOR HEX
