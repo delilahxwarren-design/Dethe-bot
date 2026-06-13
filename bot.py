@@ -572,7 +572,7 @@ if (
                 )
             ]
 
-        else:
+else:
 
             members = [
                 member for member in message.guild.members
