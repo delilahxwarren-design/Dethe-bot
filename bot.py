@@ -605,18 +605,18 @@ for i in ["3", "2", "1"]:
                 f"⏳ {i}"
             )
 
-        osoba = random.choice(
+osoba = random.choice(
             members
         )
 
-        typ = random.choice([
+typ = random.choice([
             "🟣 PRAWDA",
             "🔥 WYZWANIE"
         ])
 
-        await asyncio.sleep(1)
+await asyncio.sleep(1)
 
-        await msg.edit(
+await msg.edit(
             content=
             f"╔════════════════╗\n"
             f"      DETHE\n"
