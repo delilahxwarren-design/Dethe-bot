@@ -626,7 +626,7 @@ await msg.edit(
             f"{typ}"
         )
 
-        return
+return
 
     # =====================================
     # KOLOR HEX
