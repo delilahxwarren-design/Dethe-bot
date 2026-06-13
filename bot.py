@@ -582,7 +582,8 @@ else:
                 )
             ]
 
-        if len(members) < 1:
+    
+if len(members) < 1:
 
             await message.channel.send(
                 "❌ Brak osób do losowania."
