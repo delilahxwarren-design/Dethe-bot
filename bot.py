@@ -591,7 +591,7 @@ if len(members) < 1:
 
             return
 
-        msg = await message.channel.send(
+msg = await message.channel.send(
             "🍾 Dethe kręci butelką..."
         )
 
