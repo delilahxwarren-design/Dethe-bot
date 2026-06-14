@@ -58,10 +58,10 @@ last_messages = set()
 
 urodziny = {}
 
-if os.path.exists("urodziny.txt"):
+if os.path.exists("/data/urodziny.txt"):
 
     with open(
-        "urodziny.txt",
+        "/data/urodziny.txt",
         "r",
         encoding="utf-8"
     ) as f:
@@ -801,7 +801,7 @@ async def on_message(message):
         ] = data
 
         with open(
-            "urodziny.txt",
+            "/data/urodziny.txt",
             "w",
             encoding="utf-8"
         ) as f:
@@ -855,7 +855,7 @@ async def on_message(message):
         del urodziny[user_id]
 
         with open(
-            "urodziny.txt",
+            "/data/urodziny.txt",
             "w",
             encoding="utf-8"
         ) as f:
