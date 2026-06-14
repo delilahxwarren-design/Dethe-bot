@@ -487,6 +487,38 @@ async def on_message(message):
     if message.author.bot:
         return
 
+    # =====================================
+    # POWIADOMIENIA KONKURS
+    # =====================================
+
+    if message.channel.id == 1501267757273190624:
+
+        rola = discord.utils.get(
+            message.guild.roles,
+            name="WIADOMOŚCI"
+        )
+
+        if rola:
+
+            embed = discord.Embed(
+                title="🦅 Hej Hipogryfie!",
+                description=(
+                    "Pojawiła się odpowiedź na konkurs!\n\n"
+                    "[🥇│sala-lotnych-wyzwań](https://discord.com/channels/1500480965905219645/1501267757273190624)"
+                ),
+                color=0x6a0dad
+            )
+
+            for member in rola.members:
+
+                if member.bot:
+                    continue
+
+                try:
+                    await member.send(embed=embed)
+                except:
+                    pass
+
     if message.id in last_messages:
         return
 
